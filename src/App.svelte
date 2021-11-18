@@ -17,7 +17,7 @@
 {#await dbPromise}
   Waiting database...
 {:then _}
-  <Router>
+  <Router primary={false}>
     <Route path="/">
       <Home />
     </Route>
@@ -27,7 +27,7 @@
   <p class="error">{err.toString()}</p>
 {/await}
 
-<style>
+<style lang="scss">
   .error {
     color: red;
   }
