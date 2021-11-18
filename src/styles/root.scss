@@ -1,10 +1,10 @@
-$background-color: rgb(34, 40, 49);
-$primary-color: rgb(57, 62, 70);
-$secondary-color: rgb(0, 173, 181);
-$text-color: rgb(238, 238, 238);
+@import './variables.scss';
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
 
 :root {
   background-color: $background-color;
   color: $text-color;
   padding: 1em;
+  font-family: 'Raleway', sans-serif;
 }
