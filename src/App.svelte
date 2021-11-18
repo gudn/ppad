@@ -1,13 +1,34 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { Router, Route } from 'svelte-navigator'
 
   import Home from './pages/Home.svelte'
   import Document from './pages/Document.svelte'
+
+  import { openDBFx } from './store/db'
+
+  let dbPromise: Promise<any>
+
+  onMount(() => {
+    dbPromise = openDBFx()
+  })
 </script>
 
-<Router>
-  <Route path="/">
-    <Home />
-  </Route>
-  <Route path="/doc/:id" component={Document} />
-</Router>
+{#await dbPromise}
+  Waiting database...
+{:then _}
+  <Router>
+    <Route path="/">
+      <Home />
+    </Route>
+    <Route path="/doc/:id" component={Document} />
+  </Router>
+{:catch err}
+  <p class="error">{err.toString()}</p>
+{/await}
+
+<style>
+  .error {
+    color: red;
+  }
+</style>
