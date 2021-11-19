@@ -1,7 +1,11 @@
 <script lang="ts">
+import { onMount } from 'svelte';
+
   import Input from '../components/Input.svelte'
 
   import documents from '../store/documents'
+
+  const allDocuments = documents.all
 
   let search: string = ''
 
@@ -9,12 +13,22 @@
     search = e.detail
     documents.create(search).then(console.log)
   }
+
+  onMount(() => {
+    documents.refreshAll()
+  })
 </script>
 
 <h1>PPad</h1>
 <Input bind:value={search} on:submit={searchSubmit}>
   <span slot="icon" />
 </Input>
+
+<div class="documents-list">
+  {#each $allDocuments as doc (doc.key)}
+    <p>{doc.title}</p>
+  {/each}
+</div>
 
 <style lang="scss">
   span {

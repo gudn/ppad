@@ -39,6 +39,7 @@ export const db = createStore<IDBPDatabase | null>(null, { name: 'db' }).on(
 )
 
 export const insertFx = attach({
+  name: 'insert',
   source: db,
   mapParams: (
     params: { collection: string; value: any },
@@ -59,4 +60,27 @@ export const insertFx = attach({
       await db.add(collection, value)
     },
   }),
+})
+
+export const selectAllFx = attach({
+  name: 'selectAll',
+  source: db,
+  mapParams: (
+    params: {
+      collection: string
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: { collection: string; db: IDBPDatabase | null }) => {
+      const { collection, db } = params
+      const result: any[] = []
+      let cursor = await db.transaction(collection).store.openCursor()
+      while (cursor) {
+        result.push(cursor.value)
+        cursor = await cursor.continue()
+      }
+      return result
+    },
+  ),
 })
