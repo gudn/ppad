@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let id: string
+  export let key: string
 </script>
 
-<p>{id}</p>
+<p>{key}</p>

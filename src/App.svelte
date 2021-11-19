@@ -18,10 +18,10 @@
   Waiting database...
 {:then _}
   <Router primary={false}>
-    <Route path="/">
-      <Home />
+    <Route path="/" let:navigate>
+      <Home {navigate} />
     </Route>
-    <Route path="/doc/:id" component={Document} />
+    <Route path="/doc/:key" component={Document} />
   </Router>
 {:catch err}
   <p class="error">{err.toString()}</p>
