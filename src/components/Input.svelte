@@ -11,17 +11,17 @@
   }
 </script>
 
-<div>
+<div class="input-wrapper">
   <input type="text" bind:value on:keyup={trySubmit} />
-  <slot name="icon">
-    <span />
-  </slot>
+  <div class="slot-wrapper">
+    <slot name="icon" />
+  </div>
 </div>
 
 <style lang="scss">
   @import '../styles/variables.scss';
 
-  div {
+  .input-wrapper {
     display: flex;
     flex-direction: row-reverse;
     border: 1px solid rgba(0, 0, 0, 0.3);
@@ -42,8 +42,11 @@
       }
     }
 
-    span {
+    .slot-wrapper {
+      display: inline-flex;
       width: 24px;
+      padding: 2px;
+      box-sizing: border-box;
     }
   }
 </style>

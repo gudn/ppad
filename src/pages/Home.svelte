@@ -21,7 +21,7 @@ import { onMount } from 'svelte';
 
 <h1>PPad</h1>
 <Input bind:value={search} on:submit={searchSubmit}>
-  <span slot="icon" />
+  <span class="icon" slot="icon" />
 </Input>
 
 <div class="documents-list">
@@ -31,12 +31,11 @@ import { onMount } from 'svelte';
 </div>
 
 <style lang="scss">
-  span {
+  span.icon {
     background-image: url('/icons/search.svg');
     background-size: 20px 20px;
-    min-width: 20px;
-    box-sizing: content-box;
-    margin: 2px;
+    min-width: 100%;
+    min-height: 100%;
     filter: invert(93.3%);
   }
 </style>
