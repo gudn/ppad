@@ -1,9 +1,18 @@
 <script lang="ts">
   import Input from '../components/Input.svelte'
+
+  import documents from '../store/documents'
+
+  let search: string = ''
+
+  function searchSubmit(e: CustomEvent<string>) {
+    search = e.detail
+    documents.create(search).then(console.log)
+  }
 </script>
 
 <h1>PPad</h1>
-<Input>
+<Input bind:value={search} on:submit={searchSubmit}>
   <span slot="icon" />
 </Input>
 

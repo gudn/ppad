@@ -1,4 +1,4 @@
-import { createEffect, createStore } from 'effector'
+import { attach, createEffect, createStore } from 'effector'
 import { openDB, IDBPDatabase } from 'idb'
 
 export const openDBFx = createEffect({
@@ -37,3 +37,26 @@ export const db = createStore<IDBPDatabase | null>(null, { name: 'db' }).on(
   openDBFx.doneData,
   (_, newDB) => newDB,
 )
+
+export const insertFx = attach({
+  source: db,
+  mapParams: (
+    params: { collection: string; value: any },
+    db: IDBPDatabase | null,
+  ) => ({
+    ...params,
+    db,
+  }),
+  effect: createEffect({
+    name: 'insert',
+    async handler(params: {
+      collection: string
+      value: any
+      db: IDBPDatabase | null
+    }): Promise<void> {
+      const { collection, value, db } = params
+      if (db === null) throw 'database is uninitialized'
+      await db.add(collection, value)
+    },
+  }),
+})

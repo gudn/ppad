@@ -1,5 +1,18 @@
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte'
+
+  export let value: string = ''
+  const dispatch = createEventDispatcher()
+
+  function trySubmit(e: KeyboardEvent) {
+    const trimmed = value.trim()
+    if (!trimmed || e.key !== 'Enter') return
+    dispatch('submit', trimmed)
+  }
+</script>
+
 <div>
-  <input type="text" />
+  <input type="text" bind:value on:keyup={trySubmit} />
   <slot name="icon">
     <span />
   </slot>
