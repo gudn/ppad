@@ -14,7 +14,7 @@ export const openDBFx = createEffect({
             keyPath: 'id',
             autoIncrement: true,
           })
-          cells.createIndex('parentId', 'pid')
+          cells.createIndex('pid-rank', 'rank')
         },
         blocked() {
           reject('connection blocked')
