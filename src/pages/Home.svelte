@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { NavigateFn } from 'svelte-navigator'
-  import { createEffect, createEvent, sample } from 'effector'
+  import { attach, createEffect, createEvent, restore, sample } from 'effector'
   import Fuse from 'fuse.js'
 
   import Input from '../components/Input.svelte'
@@ -11,29 +11,29 @@
 
   const allDocuments = documents.all
 
-  let search: string = ''
   let documentsList: HTMLElement
+  const selectDocument = createEvent<string | null>('selectDocument')
+  const selectedDocumentKey = restore(selectDocument, null)
   export let navigate: NavigateFn
 
   onMount(() => {
     documents.refreshAll()
   })
 
-  function searchSubmit(e: CustomEvent<string>) {
-    search = e.detail.trim()
-    documents.create(search).then(doc => navigate(`/doc/${doc.key}`))
+  function createDocument(title: string) {
+    documents.create(title).then(doc => navigate(`/doc/${doc.key}`))
   }
 
-  function selectDocument(key: string | null) {
-    documentsList.querySelector('.selected')?.classList.remove('selected')
-    if (key === null) return
-    const selected = documentsList.querySelector(`[data-dockey='${key}']`)
+  selectedDocumentKey.watch(key => {
+    documentsList?.querySelector('.selected')?.classList.remove('selected')
+    if (!key) return
+    const selected = documentsList?.querySelector(`[data-dockey='${key}']`)
     if (!selected) return
     selected.classList.add('selected')
     selected.scrollIntoView()
-  }
+  })
 
-  const searchUpdate = createEvent('searchUpdate')
+  const searchUpdate = createEvent<string>('searchUpdate')
   sample({
     source: allDocuments.map(
       docs =>
@@ -42,13 +42,15 @@
         }),
     ),
     clock: searchUpdate,
-    target: createEffect((fuse: Fuse<PDocument>) => {
-      let trimmed = search.trim()
-      if (!trimmed) {
+    fn: (fuse, value) => ({ fuse, value }),
+    target: createEffect((params: { fuse: Fuse<PDocument>; value: string }) => {
+      const { fuse, value } = params
+      console.log(value)
+      if (!value) {
         selectDocument(null)
         return
       }
-      const res = fuse.search(trimmed, { limit: 1 })
+      const res = fuse.search(value, { limit: 1 })
       if (!res.length) {
         selectDocument(null)
         return
@@ -57,11 +59,20 @@
     }),
   })
 
-  $: {
-    // TODO HACK watch search update
-    // replace with debounces function call
-    console.log(search)
-    searchUpdate()
+  const openOrCreateFx = attach({
+    source: selectedDocumentKey,
+    mapParams: (title: string, key: string | null) => ({ title, key }),
+    effect: createEffect((params: { title: string; key: string | null }) => {
+      const { title, key } = params
+      if (key === null) createDocument(title)
+      else navigate(`/doc/${key}`)
+    }),
+  })
+
+  function searchSubmit(e: CustomEvent<{ alt: boolean; value: string }>) {
+    const value = e.detail.value
+    if (e.detail.alt) createDocument(value)
+    else openOrCreateFx(value)
   }
 
   function openHandler(e: MouseEvent) {
@@ -75,9 +86,15 @@
 <div class="wrapper">
   <header>
     <h1>PPad</h1>
-    <Input bind:value={search} on:submit={searchSubmit}>
-      <span class="icon" slot="icon" />
-    </Input>
+    <div class="input">
+      <Input
+        on:submit={searchSubmit}
+        on:update={e => searchUpdate(e.detail.value)}
+      >
+        <span class="icon" slot="icon" />
+      </Input>
+    </div>
+    <button>New</button>
   </header>
 
   <main on:click={openHandler} bind:this={documentsList}>
@@ -103,13 +120,25 @@
 
     header {
       margin: 1em;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5em;
 
-      span.icon {
-        background-image: url('/icons/search.svg');
-        background-size: 18px 18px;
-        min-width: 100%;
-        min-height: 100%;
-        filter: invert(93.3%);
+      h1 {
+        margin: 0;
+      }
+
+      .input {
+        flex: 1;
+
+        span.icon {
+          background-image: url('/icons/search.svg');
+          background-size: 18px 18px;
+          min-width: 100%;
+          min-height: 100%;
+          filter: invert(93.3%);
+        }
       }
     }
 
@@ -130,14 +159,6 @@
         padding: 0.3em;
         margin: 0.3em 0;
         border-left: 3px solid transparent;
-
-        button {
-          background-color: $secondary-color;
-          color: $text-color;
-          border-radius: 6px;
-          border: none;
-          padding: 4px 6px;
-        }
       }
 
       hr {
@@ -148,5 +169,13 @@
         border-left: 3px solid $secondary-color !important;
       }
     }
+  }
+
+  button {
+    background-color: $secondary-color;
+    color: $text-color;
+    border-radius: 6px;
+    border: none;
+    padding: 4px 6px;
   }
 </style>

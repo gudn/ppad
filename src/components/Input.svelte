@@ -1,18 +1,28 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
 
-  export let value: string = ''
-  const dispatch = createEventDispatcher()
+  import debounce from 'lodash.debounce'
+
+  let value: string = ''
+  let prev: string = ''
+  const dispatch = debounce(createEventDispatcher(), 200)
 
   function trySubmit(e: KeyboardEvent) {
     const trimmed = value.trim()
     if (!trimmed || e.key !== 'Enter') return
-    dispatch('submit', trimmed)
+    dispatch('submit', { alt: e.altKey || e.ctrlKey, value: trimmed })
+  }
+
+  function update() {
+    const trimmed = value.trim()
+    if (trimmed === prev) return
+    prev = trimmed
+    dispatch('update', { value: trimmed })
   }
 </script>
 
 <div class="input-wrapper">
-  <input type="text" bind:value on:keyup={trySubmit} />
+  <input type="text" bind:value on:keyup={trySubmit} on:keyup={update} />
   <div class="slot-wrapper">
     <slot name="icon" />
   </div>
