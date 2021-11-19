@@ -45,7 +45,7 @@
     .slot-wrapper {
       display: inline-flex;
       width: 24px;
-      padding: 2px;
+      padding: 4px;
       box-sizing: border-box;
     }
   }

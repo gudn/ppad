@@ -13,7 +13,7 @@
 
   function searchSubmit(e: CustomEvent<string>) {
     search = e.detail
-    documents.create(search).then(console.log)
+    documents.create(search)
   }
 
   onMount(() => {
@@ -50,7 +50,7 @@
 
   span.icon {
     background-image: url('/icons/search.svg');
-    background-size: 20px 20px;
+    background-size: 18px 18px;
     min-width: 100%;
     min-height: 100%;
     filter: invert(93.3%);
@@ -81,7 +81,10 @@
   }
 
   header {
-    margin: 1em;
+    position: sticky;
+    top: 0;
+    background-color: $background-color;
+    padding: 1em;
   }
 
   main {
