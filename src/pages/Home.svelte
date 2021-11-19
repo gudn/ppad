@@ -79,4 +79,12 @@
       margin: 0;
     }
   }
+
+  header {
+    margin: 1em;
+  }
+
+  main {
+    margin: 1em;
+  }
 </style>
