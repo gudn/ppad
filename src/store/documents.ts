@@ -2,7 +2,7 @@ import CyrillicToTranslit from 'cyrillic-to-translit-js'
 import { attach, createEffect, restore } from 'effector'
 
 import type { PDocument } from '../models/documents'
-import { insertFx, selectAllFx } from './db'
+import { insertFx, selectAllFx, selectFx } from './db'
 
 const transliter = new CyrillicToTranslit()
 
@@ -19,6 +19,12 @@ const createDocumentFx = createEffect(async (title: string) => {
   return doc
 })
 
+const selectDocumentFx = attach({
+  name: 'selectDocument',
+  mapParams: (key: string) => ({ collection: 'documents', key }),
+  effect: selectFx,
+})
+
 const documents = {
   all: restore<PDocument[]>(selectAllDocumentsFx.doneData, []).on(
     createDocumentFx.doneData,
@@ -26,6 +32,9 @@ const documents = {
   ),
   refreshAll: selectAllDocumentsFx,
   create: createDocumentFx,
+  getDocument(key: string): Promise<PDocument | undefined> {
+    return selectDocumentFx(key)
+  },
 }
 
 export default documents

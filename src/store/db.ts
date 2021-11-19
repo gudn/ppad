@@ -84,3 +84,25 @@ export const selectAllFx = attach({
     },
   ),
 })
+
+export const selectFx = attach({
+  name: 'select',
+  source: db,
+  mapParams: (
+    params: {
+      collection: string
+      key: string | number
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collection: string
+      key: string | number
+      db: IDBPDatabase | null
+    }) => {
+      const { collection, key, db } = params
+      return await db.get(collection, key)
+    },
+  ),
+})
