@@ -7,6 +7,7 @@
   import getCells, { Cells } from '../store/cells'
 
   import DocumentHeader from '../components/DocumentHeader.svelte'
+  import CellsComponent from '../components/Cells.svelte'
 
   export let key: string
 
@@ -31,8 +32,8 @@
   {/if}
 
   <main>
-    {#if doc}
-      <p>{key}</p>
+    {#if doc && cells}
+      <CellsComponent {cells} />
     {:else}
       <Link to="/" replace>Return to list</Link>
     {/if}
