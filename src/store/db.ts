@@ -6,7 +6,7 @@ export const openDBFx = createEffect({
   handler(): Promise<IDBPDatabase> {
     return new Promise(async (resolve, reject) => {
       const db = await openDB('ppad', 1, {
-        upgrade(db, _oldVersion, _newVersion, tx) {
+        upgrade(db, _oldVersion, _newVersion, _tx) {
           db.createObjectStore('documents', {
             keyPath: 'key',
           })
@@ -73,6 +73,58 @@ export const insertFx = attach({
   ),
 })
 
+export const insertOneFx = attach({
+  name: 'insertOne',
+  source: db,
+  mapParams: (
+    params: {
+      collection: string
+      value: any
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collection: string
+      value: any
+      db: IDBPDatabase | null
+    }): Promise<string | number> => {
+      const { collection, value, db } = params
+      const key = await db.add(collection, value)
+      const keyType = typeof key
+      if (keyType !== 'number' && keyType !== 'string')
+        throw `invalid key type ${keyType}`
+      return key as string | number
+    },
+  ),
+})
+
+export const updateFx = attach({
+  name: 'update',
+  source: db,
+  mapParams: (
+    params: {
+      collection: string
+      value: any
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collection: string
+      value: any
+      db: IDBPDatabase | null
+    }) => {
+      const { collection, value, db } = params
+      if (db === null) throw 'database is uninitialized'
+      const keyType = typeof value.key
+      if (keyType !== 'number' && keyType !== 'string')
+        throw 'value has invalid key'
+      await db.put(collection, value, value.key)
+    },
+  ),
+})
+
 export const deleteFx = attach({
   name: 'delete',
   source: db,
@@ -86,6 +138,7 @@ export const deleteFx = attach({
         collection: string
         key: string | number
       }[]
+
       db: IDBPDatabase | null
     }) => {
       const { objs, db } = params
@@ -101,6 +154,44 @@ export const deleteFx = attach({
         )
         .concat([tx.done])
       await Promise.all(operations)
+    },
+  ),
+})
+
+export const deleteWhereFx = attach({
+  name: 'deleteWhere',
+  source: db,
+  mapParams: (
+    params: {
+      collection: string
+      index: string
+      where: IDBKeyRange | string | number
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collection: string
+      index: string
+      where: IDBKeyRange | string | number
+      db: IDBPDatabase | null
+    }) => {
+      const { collection, index, where, db } = params
+      if (db === null) throw 'database is uninitialized'
+      const tx = db.transaction(collection, 'readwrite')
+      let cursor = await tx.store.index(index).openCursor(where)
+      const keys = []
+      while (cursor) {
+        const key = cursor.key
+        const keyType = typeof key
+        if (keyType !== 'number' && keyType !== 'string')
+          throw `invalid key type ${keyType}`
+        keys.push(key as string | number)
+        await cursor.delete()
+        cursor = await cursor.continue()
+      }
+      await tx.done
+      return keys
     },
   ),
 })
@@ -174,6 +265,38 @@ export const selectKeyBy = attach({
       if (keyType !== 'number' && keyType !== 'string')
         throw `invalid key type ${keyType}`
       return key as string | number
+    },
+  ),
+})
+
+export const selectAllWhere = attach({
+  name: 'selectAllWhere',
+  source: db,
+  mapParams: (
+    params: {
+      collection: string
+      index: string
+      where: IDBKeyRange
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collection: string
+      index: string
+      where: IDBKeyRange
+      db: IDBPDatabase | null
+    }): Promise<any[]> => {
+      const { collection, index, where, db } = params
+      const tx = db.transaction(collection)
+      let cursor = await tx.store.index(index).openCursor(where)
+      const result: any[] = []
+      while (cursor) {
+        result.push(cursor.value)
+        cursor = await cursor.continue()
+      }
+      await tx.done
+      return result
     },
   ),
 })
