@@ -9,7 +9,7 @@ import {
   updateFx,
 } from './db'
 
-interface Cells {
+export interface Cells {
   all: Store<PCell[]>
 
   // id will be excluded

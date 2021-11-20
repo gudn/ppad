@@ -46,8 +46,6 @@
   @import '../styles/variables.scss';
 
   header {
-    position: sticky;
-    top: 0;
     background-color: $background-color;
     padding: 0.5em 1em;
 
