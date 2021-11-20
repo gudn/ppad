@@ -149,3 +149,31 @@ export const selectFx = attach({
     },
   ),
 })
+
+export const selectKeyBy = attach({
+  name: 'selectKeyBy',
+  source: db,
+  mapParams: (
+    params: {
+      collection: string
+      index: string
+      value: string | number | IDBKeyRange
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collection: string
+      index: string
+      value: string | number | IDBKeyRange
+      db: IDBPDatabase | null
+    }): Promise<string | number> => {
+      const { collection, index, value, db } = params
+      const key = await db.getKeyFromIndex(collection, index, value)
+      const keyType = typeof key
+      if (keyType !== 'number' && keyType !== 'string')
+        throw `invalid key type ${keyType}`
+      return key as string | number
+    },
+  ),
+})
