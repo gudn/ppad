@@ -5,6 +5,8 @@
   import type { PDocument } from '../models/documents'
   import documents from '../store/documents'
 
+  import DocumentHeader from '../components/DocumentHeader.svelte'
+
   export let key: string
 
   let doc: PDocument | null = null
@@ -14,10 +16,9 @@
   })
 </script>
 
-<header>
-  <h4>{doc?.title ?? 'Undefined'}</h4>
-  <hr />
-</header>
+{#if doc}
+  <DocumentHeader {doc} />
+{/if}
 
 <main>
   {#if doc}
@@ -29,16 +30,6 @@
 
 <style lang="scss">
   @import '../styles/variables.scss';
-
-  header {
-    position: sticky;
-    top: 0;
-    background-color: $background-color;
-    padding: 0.5em 1em;
-    hr {
-      margin-block-end: 0;
-    }
-  }
 
   main {
     margin: 1em;
