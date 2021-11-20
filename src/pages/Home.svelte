@@ -94,7 +94,7 @@
         <span class="icon" slot="icon" />
       </Input>
     </div>
-    <button>New</button>
+    <button class="new">New</button>
   </header>
 
   <main on:click={openHandler} bind:this={documentsList}>
@@ -172,10 +172,14 @@
   }
 
   button {
-    background-color: $secondary-color;
+    background-color: $primary-color;
     color: $text-color;
     border-radius: 6px;
     border: none;
     padding: 4px 6px;
+
+    &.new {
+      background-color: $secondary-color !important;
+    }
   }
 </style>
