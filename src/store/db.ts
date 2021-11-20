@@ -48,18 +48,37 @@ export const insertFx = attach({
     ...params,
     db,
   }),
-  effect: createEffect({
-    name: 'insert',
-    async handler(params: {
+  effect: createEffect(
+    async (params: {
       collection: string
       value: any
       db: IDBPDatabase | null
-    }): Promise<void> {
+    }) => {
       const { collection, value, db } = params
       if (db === null) throw 'database is uninitialized'
       await db.add(collection, value)
     },
-  }),
+  ),
+})
+
+export const deleteFx = attach({
+  name: 'delete',
+  source: db,
+  mapParams: (
+    params: { collection: string; key: string | number },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collection: string
+      key: string | number
+      db: IDBPDatabase | null
+    }) => {
+      const { collection, key, db } = params
+      if (db === null) throw 'database is uninitialized'
+      await db.delete(collection, key)
+    },
+  ),
 })
 
 export const selectAllFx = attach({

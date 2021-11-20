@@ -2,7 +2,7 @@ import CyrillicToTranslit from 'cyrillic-to-translit-js'
 import { attach, createEffect, restore } from 'effector'
 
 import type { PDocument } from '../models/documents'
-import { insertFx, selectAllFx, selectFx } from './db'
+import { deleteFx, insertFx, selectAllFx, selectFx } from './db'
 
 const transliter = new CyrillicToTranslit()
 
@@ -12,6 +12,12 @@ const selectAllDocumentsFx = attach({
   effect: selectAllFx,
 })
 
+const selectDocumentFx = attach({
+  name: 'selectDocument',
+  mapParams: (key: string) => ({ collection: 'documents', key }),
+  effect: selectFx,
+})
+
 const createDocumentFx = createEffect(async (title: string) => {
   const key = transliter.transform(title, '_')
   const doc = { key, title }
@@ -19,19 +25,20 @@ const createDocumentFx = createEffect(async (title: string) => {
   return doc
 })
 
-const selectDocumentFx = attach({
-  name: 'selectDocument',
-  mapParams: (key: string) => ({ collection: 'documents', key }),
-  effect: selectFx,
+const deleteDocumentFx = createEffect(async (key: string) => {
+  await deleteFx({ collection: 'documents', key })
+  return key
 })
 
 const documents = {
-  all: restore<PDocument[]>(selectAllDocumentsFx.doneData, []).on(
-    createDocumentFx.doneData,
-    (docs, newDoc) => [...docs, newDoc],
-  ),
+  all: restore<PDocument[]>(selectAllDocumentsFx.doneData, [])
+    .on(createDocumentFx.doneData, (docs, newDoc) => [...docs, newDoc])
+    .on(deleteDocumentFx.doneData, (docs, removedKey) =>
+      docs.filter(it => it.key !== removedKey),
+    ),
   refreshAll: selectAllDocumentsFx,
   create: createDocumentFx,
+  delete_: deleteDocumentFx,
   getDocument(key: string): Promise<PDocument | undefined> {
     return selectDocumentFx(key)
   },

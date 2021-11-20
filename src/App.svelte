@@ -28,7 +28,9 @@
 {/await}
 
 <style lang="scss">
+  @import './styles/variables.scss';
+
   .error {
-    color: red;
+    color: $danger-color;
   }
 </style>
