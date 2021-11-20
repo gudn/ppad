@@ -1,11 +1,18 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher, onMount } from 'svelte'
 
   import debounce from 'lodash.debounce'
 
+  export let autofocus: boolean = false
+
   let value: string = ''
   let prev: string = ''
+  let input: HTMLInputElement
   const dispatch = debounce(createEventDispatcher(), 200)
+
+  onMount(() => {
+    if (autofocus) input.focus()
+  })
 
   function trySubmit(e: KeyboardEvent) {
     const trimmed = value.trim()
@@ -22,7 +29,13 @@
 </script>
 
 <div class="input-wrapper">
-  <input type="text" bind:value on:keyup={trySubmit} on:keyup={update} />
+  <input
+    type="text"
+    bind:value
+    on:keyup={trySubmit}
+    on:keyup={update}
+    bind:this={input}
+  />
   <div class="slot-wrapper">
     <slot name="icon" />
   </div>

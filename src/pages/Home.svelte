@@ -10,11 +10,11 @@
   import type { PDocument } from '../models/documents'
 
   const allDocuments = documents.all
+  export let navigate: NavigateFn
 
   let documentsList: HTMLElement
   const selectDocument = createEvent<string | null>('selectDocument')
   const selectedDocumentKey = restore(selectDocument, null)
-  export let navigate: NavigateFn
 
   onMount(() => {
     documents.refreshAll()
@@ -45,7 +45,6 @@
     fn: (fuse, value) => ({ fuse, value }),
     target: createEffect((params: { fuse: Fuse<PDocument>; value: string }) => {
       const { fuse, value } = params
-      console.log(value)
       if (!value) {
         selectDocument(null)
         return
@@ -90,6 +89,7 @@
       <Input
         on:submit={searchSubmit}
         on:update={e => searchUpdate(e.detail.value)}
+        autofocus
       >
         <span class="icon" slot="icon" />
       </Input>
