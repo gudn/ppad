@@ -11,7 +11,7 @@ export const openDBFx = createEffect({
             keyPath: 'key',
           })
           const cells = db.createObjectStore('cells', {
-            keyPath: 'id',
+            keyPath: 'key',
             autoIncrement: true,
           })
           cells.createIndex('pid-rank', 'rank')
