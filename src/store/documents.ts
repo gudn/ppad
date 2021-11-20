@@ -21,12 +21,12 @@ const selectDocumentFx = attach({
 const createDocumentFx = createEffect(async (title: string) => {
   const key = transliter.transform(title, '_')
   const doc = { key, title }
-  await insertFx({ collection: 'documents', value: doc })
+  await insertFx([{ collection: 'documents', value: doc }])
   return doc
 })
 
 const deleteDocumentFx = createEffect(async (key: string) => {
-  await deleteFx({ collection: 'documents', key })
+  await deleteFx([{ collection: 'documents', key }])
   return key
 })
 

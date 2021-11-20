@@ -42,21 +42,33 @@ export const insertFx = attach({
   name: 'insert',
   source: db,
   mapParams: (
-    params: { collection: string; value: any },
+    objs: { collection: string; value: any }[],
     db: IDBPDatabase | null,
   ) => ({
-    ...params,
+    objs,
     db,
   }),
   effect: createEffect(
     async (params: {
-      collection: string
-      value: any
+      objs: {
+        collection: string
+        value: any
+      }[]
       db: IDBPDatabase | null
     }) => {
-      const { collection, value, db } = params
+      const { objs, db } = params
       if (db === null) throw 'database is uninitialized'
-      await db.add(collection, value)
+      const collections = new Set()
+      for (const { collection } of objs) collections.add(collection)
+      // @ts-ignore
+      const tx = db.transaction(Array.from(collections.values()), 'readwrite')
+      const operations = objs
+        .map(
+          ({ collection, value }): Promise<any> =>
+            tx.objectStore(collection).add(value),
+        )
+        .concat([tx.done])
+      await Promise.all(operations)
     },
   ),
 })
@@ -65,18 +77,30 @@ export const deleteFx = attach({
   name: 'delete',
   source: db,
   mapParams: (
-    params: { collection: string; key: string | number },
+    objs: { collection: string; key: string | number }[],
     db: IDBPDatabase | null,
-  ) => ({ ...params, db }),
+  ) => ({ objs, db }),
   effect: createEffect(
     async (params: {
-      collection: string
-      key: string | number
+      objs: {
+        collection: string
+        key: string | number
+      }[]
       db: IDBPDatabase | null
     }) => {
-      const { collection, key, db } = params
+      const { objs, db } = params
       if (db === null) throw 'database is uninitialized'
-      await db.delete(collection, key)
+      const collections = new Set()
+      for (const { collection } of objs) collections.add(collection)
+      // @ts-ignore
+      const tx = db.transaction(Array.from(collections.values()), 'readwrite')
+      const operations = objs
+        .map(
+          ({ collection, key }): Promise<any> =>
+            tx.objectStore(collection).delete(key),
+        )
+        .concat([tx.done])
+      await Promise.all(operations)
     },
   ),
 })
