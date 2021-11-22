@@ -1,3 +1,4 @@
+import sort from 'sort-es'
 import { clearNode, createDomain, Store } from 'effector'
 
 import type { PCell } from '../models/cells'
@@ -13,10 +14,16 @@ export interface Cells {
   all: Store<PCell[]>
 
   // id will be excluded
-  insert: (cell: PCell) => Promise<PCell>
-  update: (cell: PCell) => Promise<PCell>
-  deleteByKey: (key: number) => Promise<number>
-  deleteByRank: (rank: string) => Promise<number>
+  low: {
+    insert: (cell: PCell) => Promise<PCell>
+    update: (cell: PCell) => Promise<PCell>
+    deleteByKey: (key: number) => Promise<number>
+    deleteByRank: (rank: string) => Promise<number>
+  }
+  high: {
+    // createLast: () => Promise<PCell>
+    // createBetween: (rank1: string, rank2: string) => Promise<PCell>
+  }
   clean: () => void
 }
 
@@ -76,9 +83,11 @@ export default async function cellsFromDocument(
         name: `cells of ${docKey}`,
       },
     )
-    .on(insertCellFx.doneData, (cells, newCell) => {
-      return [...cells, newCell] // TODO add sorting
-    })
+    .on(insertCellFx.doneData, (cells, newCell) =>
+      [...cells, newCell].sort(
+        sort.byValue(cell => cell.rank, sort.byString()),
+      ),
+    )
     .on(deleteByKeyFx.doneData, (cells, deletedKey) =>
       cells.filter(cell => cell.key !== deletedKey),
     )
@@ -94,17 +103,20 @@ export default async function cellsFromDocument(
           return updatedCell
         }
       })
-      // TODO resort cells
-      if (rankChanged) throw 'unimplemented'
+      if (rankChanged)
+        return result.sort(sort.byValue(cell => cell.rank, sort.byString()))
       return result
     })
 
   return {
     all,
-    insert: insertCellFx,
-    update: updateCellFx,
-    deleteByKey: deleteByKeyFx,
-    deleteByRank: deleteByRankFx,
+    low: {
+      insert: insertCellFx,
+      update: updateCellFx,
+      deleteByKey: deleteByKeyFx,
+      deleteByRank: deleteByRankFx,
+    },
+    high: {},
     clean() {
       clearNode(domain)
     },
