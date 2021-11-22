@@ -1,5 +1,5 @@
 import sort from 'sort-es'
-import { LexoRank } from 'lexorank'
+import { LexoRank } from '@wewatch/lexorank'
 import { attach, clearNode, createDomain, Store } from 'effector'
 
 import type { PCell } from '../models/cells'
@@ -25,7 +25,8 @@ export interface Cells {
     createEmptyFirst: () => Promise<PCell>
     createEmptyLast: () => Promise<PCell>
     // createEmptyBetween: (rank1: string, rank2: string) => Promise<PCell>
-  }
+
+}
   clean: () => void
 }
 
@@ -121,7 +122,6 @@ export default async function cellsFromDocument(
       const cell = {
         content: [],
         rank: lastRank.genNext().toString(),
-        key: -1,
       }
       // Optimize for avoid sorting
       const key = (await insertOneFx({
@@ -143,7 +143,6 @@ export default async function cellsFromDocument(
       const cell = {
         content: [],
         rank: firstRank.genPrev().toString(),
-        key: -1,
       }
       // Optimize for avoid sorting
       const key = (await insertOneFx({

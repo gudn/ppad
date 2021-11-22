@@ -2,25 +2,36 @@
   import type { Cells } from '../store/cells'
 
   export let cells: Cells
+
+  $: all = cells.all
+
 </script>
 
-{cells.toString()}
-
-<footer>
-  <button>
+{#if $all.length}
+  <button class="create">
     <span class="icon" />
     <span class="label">Create</span>
   </button>
-</footer>
+{/if}
+
+{#each $all as cell (cell.key)}
+  <p>{cell.key} - {cell.rank}</p>
+{/each}
+
+<div class="button create">
+  <button on:click={cells.high.createEmptyLast}>
+    <span class="icon" />
+    <span class="label">Create</span>
+  </button>
+</div>
 
 <style lang="scss">
   @import '../styles/variables.scss';
 
-  footer {
+  .button {
     display: flex;
     justify-content: center;
     align-items: center;
-
     button {
       align-items: center;
       display: flex;
@@ -32,7 +43,9 @@
       border-radius: 6px;
       border: none;
       padding: 0.5em;
+    }
 
+    &.create button {
       .icon {
         background-image: url('/icons/add.svg');
         background-size: 18px 18px;
