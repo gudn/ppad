@@ -51,8 +51,9 @@
     align-items: stretch;
 
     main {
-      margin: 0.2em 1em;
+      margin: 0.3em 1em;
       margin-top: 0;
+      padding: 0.3em 0;
       overflow: scroll;
 
       &::-webkit-scrollbar {
