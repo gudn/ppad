@@ -1,5 +1,6 @@
 import sort from 'sort-es'
-import { clearNode, createDomain, Store } from 'effector'
+import { LexoRank } from 'lexorank'
+import { attach, clearNode, createDomain, Store } from 'effector'
 
 import type { PCell } from '../models/cells'
 import {
@@ -21,8 +22,9 @@ export interface Cells {
     deleteByRank: (rank: string) => Promise<number>
   }
   high: {
-    // createLast: () => Promise<PCell>
-    // createBetween: (rank1: string, rank2: string) => Promise<PCell>
+    createEmptyFirst: () => Promise<PCell>
+    createEmptyLast: () => Promise<PCell>
+    // createEmptyBetween: (rank1: string, rank2: string) => Promise<PCell>
   }
   clean: () => void
 }
@@ -108,6 +110,54 @@ export default async function cellsFromDocument(
       return result
     })
 
+  const createEmptyLastFx = attach({
+    name: 'createEmptyFirst',
+    source: all,
+    mapParams: (_, cells) => cells.slice(-1)[0] ?? null,
+    effect: domain.createEffect(async (lastCell: PCell | null) => {
+      const lastRank = lastCell
+        ? LexoRank.parse(lastCell.rank)
+        : LexoRank.middle()
+      const cell = {
+        content: [],
+        rank: lastRank.genNext().toString(),
+        key: -1,
+      }
+      // Optimize for avoid sorting
+      const key = (await insertOneFx({
+        collection: 'cells',
+        value: { ...cell, rank: `${docKey}-${cell.rank}` },
+      })) as number
+      return { ...cell, key }
+    }),
+  })
+
+  const createEmptyFirstFx = attach({
+    name: 'createEmptyFirst',
+    source: all,
+    mapParams: (_, cells) => cells[0] ?? null,
+    effect: domain.createEffect(async (firstCell: PCell | null) => {
+      const firstRank = firstCell
+        ? LexoRank.parse(firstCell.rank)
+        : LexoRank.middle()
+      const cell = {
+        content: [],
+        rank: firstRank.genPrev().toString(),
+        key: -1,
+      }
+      // Optimize for avoid sorting
+      const key = (await insertOneFx({
+        collection: 'cells',
+        value: { ...cell, rank: `${docKey}-${cell.rank}` },
+      })) as number
+      return { ...cell, key }
+    }),
+  })
+
+  all
+    .on(createEmptyLastFx.doneData, (cells, newCell) => [...cells, newCell])
+    .on(createEmptyFirstFx.doneData, (cells, newCell) => [newCell, ...cells])
+
   return {
     all,
     low: {
@@ -116,7 +166,10 @@ export default async function cellsFromDocument(
       deleteByKey: deleteByKeyFx,
       deleteByRank: deleteByRankFx,
     },
-    high: {},
+    high: {
+      createEmptyFirst: () => createEmptyFirstFx(undefined),
+      createEmptyLast: () => createEmptyLastFx(undefined),
+    },
     clean() {
       clearNode(domain)
     },
