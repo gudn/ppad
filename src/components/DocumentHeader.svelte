@@ -48,6 +48,7 @@
   header {
     background-color: $background-color;
     padding: 0.5em 1em;
+    z-index: 10;
 
     div {
       display: flex;
