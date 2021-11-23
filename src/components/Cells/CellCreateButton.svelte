@@ -56,6 +56,10 @@
       .label {
         margin-top: 2px;
       }
+
+      &:hover, &:focus {
+        background-color: $hover-color;
+      }
     }
 
     hr {

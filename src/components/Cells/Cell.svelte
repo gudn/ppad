@@ -10,12 +10,12 @@
   <div>
     {cell.key} - {cell.rank}
   </div>
-  <CellButtons>
-    Buttons
-  </CellButtons>
+  <CellButtons />
 </section>
 
 <style lang="scss">
+  @import '../../styles/variables.scss';
+
   section {
     position: relative;
   }

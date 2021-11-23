@@ -5,8 +5,6 @@
 <style lang="scss">
   @import '../styles/variables.scss';
 
-  $border-color: change-color($text-color, $alpha: 0.3);
-
   .dropdown {
     border: 1px solid $border-color;
     border-radius: 4px;
@@ -52,7 +50,7 @@
         }
 
         :global(li:hover) {
-          background-color: adjust-color($primary-color, $lightness: 5%);
+          background-color: $hover-color;
         }
       }
     }
