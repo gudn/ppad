@@ -13,7 +13,7 @@
 </div>
 
 <style lang="scss">
-  @import '../styles/variables.scss';
+  @import '../../styles/variables.scss';
 
   .outer {
     min-height: 20px;

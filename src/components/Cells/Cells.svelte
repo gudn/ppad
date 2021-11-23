@@ -1,7 +1,8 @@
 <script lang="ts">
-  import type { Cells } from '../store/cells'
+  import type { Cells } from '../../store/cells'
 
   import CellCreateButton from './CellCreateButton.svelte'
+  import Cell from './Cell.svelte'
 
   export let cells: Cells
 
@@ -30,7 +31,7 @@
 <div on:click={clickHandler}>
   <CellCreateButton index={0} />
   {#each $all as cell, index (cell.key)}
-    <div>{cell.key} - {cell.rank}</div>
+    <Cell {cell} />
     <CellCreateButton index={index + 1} />
   {/each}
 </div>

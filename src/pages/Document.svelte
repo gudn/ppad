@@ -7,7 +7,7 @@
   import getCells, { Cells } from '../store/cells'
 
   import DocumentHeader from '../components/DocumentHeader.svelte'
-  import CellsComponent from '../components/Cells.svelte'
+  import CellsComponent from '../components/Cells/Cells.svelte'
 
   export let key: string
 
