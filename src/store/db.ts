@@ -1,5 +1,5 @@
 import { attach, createEffect, createStore } from 'effector'
-import { openDB, IDBPDatabase } from 'idb'
+import { openDB, IDBPDatabase, IDBPTransaction } from 'idb'
 
 export const openDBFx = createEffect({
   name: 'openDB',
@@ -37,6 +37,40 @@ export const db = createStore<IDBPDatabase | null>(null, { name: 'db' }).on(
   openDBFx.doneData,
   (_, newDB) => newDB,
 )
+
+export const transactionFx = attach({
+  name: 'transaction',
+  source: db,
+  mapParams: (
+    params: {
+      collections: string[]
+      handler: <M extends IDBTransactionMode = 'readonly'>(
+        tx: IDBPTransaction<unknown, string[], M>,
+      ) => Promise<boolean>
+      rdonly: boolean
+    },
+    db: IDBPDatabase | null,
+  ) => ({ ...params, db }),
+  effect: createEffect(
+    async (params: {
+      collections: string[]
+      handler: <M extends IDBTransactionMode>(
+        tx: IDBPTransaction<unknown, string[], M>,
+      ) => Promise<boolean>
+      rdonly: boolean
+      db: IDBPDatabase | null
+    }) => {
+      const { collections, db, handler } = params
+      const tx = db.transaction(
+        collections,
+        params.rdonly ? 'readonly' : 'readwrite',
+      )
+      const res = await handler(tx)
+      if (!res) tx.abort()
+      await tx.done
+    },
+  ),
+})
 
 export const insertFx = attach({
   name: 'insert',
