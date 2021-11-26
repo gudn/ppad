@@ -1,3 +1,9 @@
+<script lang="ts">
+  import type { PCell } from '../../models/cells'
+
+  export let cell: PCell
+</script>
+
 <div class="outer">
   <div class="inner">
     <button>
@@ -8,7 +14,7 @@
       <span class="icon arrow-down" />
       <span class="label">Down</span>
     </button>
-    <button>
+    <button class="click-handler delete-cell" data-key={cell.key}>
       <span class="icon trash" />
       <span class="label">Delete</span>
     </button>

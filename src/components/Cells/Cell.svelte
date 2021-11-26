@@ -10,7 +10,7 @@
   <div>
     {cell.key} - {cell.rank}
   </div>
-  <CellButtons />
+  <CellButtons {cell} />
 </section>
 
 <style lang="scss">

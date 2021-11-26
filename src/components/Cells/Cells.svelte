@@ -25,6 +25,8 @@
       target = target.parentElement
     if (target.classList.contains('create-cell'))
       createCellAtIndex(parseInt(target.dataset.index))
+    else if (target.classList.contains('delete-cell'))
+      cells.low.deleteByKey(parseInt(target.dataset.key))
   }
 </script>
 
