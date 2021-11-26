@@ -2,7 +2,7 @@ import CyrillicToTranslit from 'cyrillic-to-translit-js'
 import { attach, createEffect, restore } from 'effector'
 
 import type { PDocument } from '../models/documents'
-import { deleteFx, insertFx, selectAllFx, selectFx, selectKeyBy } from './db'
+import { deleteFx, deleteWhereFx, insertFx, selectAllFx, selectFx, selectKeyBy } from './db'
 
 const transliter = new CyrillicToTranslit()
 
@@ -29,14 +29,13 @@ const createDocumentFx = createEffect(async (title: string) => {
 })
 
 const deleteDocumentFx = createEffect(async (key: string) => {
-  const fictiveCellKey = await selectKeyBy({
+  await deleteWhereFx({
     collection: 'cells',
     index: 'pid-rank',
-    value: `${key}.`,
+    where: IDBKeyRange.bound(`${key}-`, `${key}.`, false, false)
   })
   await deleteFx([
     { collection: 'documents', key },
-    { collection: 'cells', key: fictiveCellKey },
   ])
   return key
 })
