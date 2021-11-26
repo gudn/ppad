@@ -27,6 +27,10 @@
       createCellAtIndex(parseInt(target.dataset.index))
     else if (target.classList.contains('delete-cell'))
       cells.low.deleteByKey(parseInt(target.dataset.key))
+    else if (target.classList.contains('up-cell'))
+      console.log('TODO')
+    else if (target.classList.contains('down-cell'))
+      console.log('TODO')
   }
 </script>
 

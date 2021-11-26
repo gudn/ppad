@@ -24,6 +24,7 @@ export interface Cells {
     createEmptyFirst: () => Promise<PCell>
     createEmptyLast: () => Promise<PCell>
     deleteByRank: (rank: string) => Promise<number>
+    // swapCells: (rank1: string, rank2: string) => Promise<void>
     // createEmptyBetween: (rank1: string, rank2: string) => Promise<PCell>
   }
   clean: () => void

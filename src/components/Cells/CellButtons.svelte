@@ -6,11 +6,11 @@
 
 <div class="outer">
   <div class="inner">
-    <button>
+    <button class="click-handler up-cell">
       <span class="icon arrow-up" />
       <span class="label">Up</span>
     </button>
-    <button>
+    <button class="click-handler down-cell">
       <span class="icon arrow-down" />
       <span class="label">Down</span>
     </button>
