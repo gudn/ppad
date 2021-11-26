@@ -19,11 +19,11 @@ export interface Cells {
     insert: (cell: PCell) => Promise<PCell>
     update: (cell: PCell) => Promise<PCell>
     deleteByKey: (key: number) => Promise<number>
-    deleteByRank: (rank: string) => Promise<number>
   }
   high: {
     createEmptyFirst: () => Promise<PCell>
     createEmptyLast: () => Promise<PCell>
+    deleteByRank: (rank: string) => Promise<number>
     // createEmptyBetween: (rank1: string, rank2: string) => Promise<PCell>
   }
   clean: () => void
@@ -167,11 +167,11 @@ export default async function cellsFromDocument(
       insert: insertCellFx,
       update: updateCellFx,
       deleteByKey: deleteByKeyFx,
-      deleteByRank: deleteByRankFx,
     },
     high: {
       createEmptyFirst: () => createEmptyFirstFx(undefined),
       createEmptyLast: () => createEmptyLastFx(undefined),
+      deleteByRank: deleteByRankFx,
     },
     clean() {
       clearNode(domain)
