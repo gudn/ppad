@@ -25,8 +25,7 @@ export interface Cells {
     createEmptyFirst: () => Promise<PCell>
     createEmptyLast: () => Promise<PCell>
     // createEmptyBetween: (rank1: string, rank2: string) => Promise<PCell>
-
-}
+  }
   clean: () => void
 }
 
@@ -120,10 +119,12 @@ export default async function cellsFromDocument(
         ? LexoRank.parse(lastCell.rank)
         : LexoRank.middle()
       const cell = {
-        content: [],
+        content: {
+          content: '',
+          rendered: '',
+        },
         rank: lastRank.genNext().toString(),
       }
-      // Optimize for avoid sorting
       const key = (await insertOneFx({
         collection: 'cells',
         value: { ...cell, rank: `${docKey}-${cell.rank}` },
@@ -141,7 +142,10 @@ export default async function cellsFromDocument(
         ? LexoRank.parse(firstCell.rank)
         : LexoRank.middle()
       const cell = {
-        content: [],
+        content: {
+          content: '',
+          rendered: '',
+        },
         rank: firstRank.genPrev().toString(),
       }
       // Optimize for avoid sorting

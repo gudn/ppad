@@ -1,9 +1,6 @@
 export interface PContentItem {
   content: string
   rendered: string
-  // from 0 to 1
-  width: number
-  height: number
 }
 
 export interface PCell {
@@ -11,5 +8,5 @@ export interface PCell {
   key: number
   // manually setted by lexorank strategy
   rank: string
-  content: PContentItem[][]
+  content: PContentItem
 }
