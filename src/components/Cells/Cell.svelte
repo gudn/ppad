@@ -4,13 +4,14 @@
   import CellButtons from './CellButtons.svelte'
 
   export let cell: PCell
+  export let index: number
 </script>
 
 <section>
   <div>
     {cell.key} - {cell.rank}
   </div>
-  <CellButtons {cell} />
+  <CellButtons {index} />
 </section>
 
 <style lang="scss">

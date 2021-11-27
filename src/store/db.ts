@@ -68,6 +68,7 @@ export const transactionFx = attach({
       const res = await handler(tx)
       if (!res) tx.abort()
       await tx.done
+      return res
     },
   ),
 })

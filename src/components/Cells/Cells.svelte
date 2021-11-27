@@ -25,19 +25,35 @@
       target = target.parentElement
     if (target.classList.contains('create-cell'))
       createCellAtIndex(parseInt(target.dataset.index))
-    else if (target.classList.contains('delete-cell'))
-      cells.low.deleteByKey(parseInt(target.dataset.key))
-    else if (target.classList.contains('up-cell'))
-      console.log('TODO')
-    else if (target.classList.contains('down-cell'))
-      console.log('TODO')
+    else if (target.classList.contains('delete-cell')) {
+      const idx = parseInt(target.dataset.index) - 1
+      cells.low.deleteByKey($all[idx].key)
+    }
+    else if (target.classList.contains('up-cell')) {
+      const idx = parseInt(target.dataset.index) - 1
+      if (idx === 0) return
+      else {
+        const rank1 = $all[idx - 1].rank
+        const rank2 = $all[idx].rank
+        cells.high.swapCells(rank1, rank2)
+      }
+    }
+    else if (target.classList.contains('down-cell')) {
+      const idx = parseInt(target.dataset.index)
+      if (idx === $all.length) return
+      else {
+        const rank1 = $all[idx - 1].rank
+        const rank2 = $all[idx].rank
+        cells.high.swapCells(rank1, rank2)
+      }
+    }
   }
 </script>
 
 <div on:click={clickHandler}>
   <CellCreateButton index={0} />
   {#each $all as cell, index (cell.key)}
-    <Cell {cell} />
+    <Cell {cell} index={index + 1} />
     <CellCreateButton index={index + 1} />
   {/each}
 </div>

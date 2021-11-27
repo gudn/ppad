@@ -8,6 +8,7 @@ import {
   deleteWhereFx,
   insertOneFx,
   selectAllWhere,
+  transactionFx,
   updateFx,
 } from './db'
 
@@ -24,7 +25,7 @@ export interface Cells {
     createEmptyFirst: () => Promise<PCell>
     createEmptyLast: () => Promise<PCell>
     deleteByRank: (rank: string) => Promise<number>
-    // swapCells: (rank1: string, rank2: string) => Promise<void>
+    swapCells: (rank1: string, rank2: string) => Promise<void>
     // createEmptyBetween: (rank1: string, rank2: string) => Promise<PCell>
   }
   clean: () => void
@@ -158,9 +159,68 @@ export default async function cellsFromDocument(
     }),
   })
 
+  const swapCellsFx = domain.createEffect(
+    async ({ irank1, irank2 }: { irank1: string; irank2: string }) => {
+      if (irank2 < irank1) [irank1, irank2] = [irank2, irank1]
+      const rank1 = `${docKey}-${irank1}`
+      const rank2 = `${docKey}-${irank2}`
+      const where = IDBKeyRange.bound(rank1, rank2, false, false)
+      const res = await transactionFx({
+        collections: ['cells'],
+        rdonly: false,
+        async handler(tx) {
+          let cursor = await tx
+            .objectStore('cells')
+            .index('pid-rank')
+            .openCursor(where)
+          let firstKey: number | null = null
+          if (cursor.value.rank === rank1) {
+            firstKey = cursor.value.key as number
+            await cursor.update({
+              ...cursor.value,
+              rank: rank2,
+            })
+            cursor = await cursor.continue()
+          } else {
+            return false
+          }
+          while (cursor) {
+            if (cursor.value.rank !== rank2 || cursor.value.key === firstKey) {
+              cursor = await cursor.continue()
+            } else {
+              await cursor.update({ ...cursor.value, rank: rank1 })
+              return true
+            }
+          }
+          return false
+        },
+      })
+      if (!res) throw `error while swapping ${rank1} and ${rank2}`
+      return [irank1, irank2]
+    },
+  )
+
   all
     .on(createEmptyLastFx.doneData, (cells, newCell) => [...cells, newCell])
     .on(createEmptyFirstFx.doneData, (cells, newCell) => [newCell, ...cells])
+    .on(swapCellsFx.doneData, (cells, [rank1, rank2]) => {
+      let cell1: PCell | null = null,
+        cell2: PCell | null = null
+      for (let cell of cells) {
+        if (cell.rank === rank1) cell2 = { ...cell, rank: rank2 }
+        else if (cell.rank === rank2) cell1 = { ...cell, rank: rank1 }
+      }
+      return cells.map(cell => {
+        switch (cell.rank) {
+          case rank1:
+            return cell1
+          case rank2:
+            return cell2
+          default:
+            return cell
+        }
+      })
+    })
 
   return {
     all,
@@ -173,6 +233,9 @@ export default async function cellsFromDocument(
       createEmptyFirst: () => createEmptyFirstFx(undefined),
       createEmptyLast: () => createEmptyLastFx(undefined),
       deleteByRank: deleteByRankFx,
+      swapCells: async (rank1, rank2) => {
+        await swapCellsFx({ irank1: rank1, irank2: rank2 })
+      },
     },
     clean() {
       clearNode(domain)

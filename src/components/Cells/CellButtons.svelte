@@ -1,20 +1,20 @@
 <script lang="ts">
   import type { PCell } from '../../models/cells'
 
-  export let cell: PCell
+  export let index: number
 </script>
 
 <div class="outer">
   <div class="inner">
-    <button class="click-handler up-cell">
+    <button class="click-handler up-cell" data-index={index}>
       <span class="icon arrow-up" />
       <span class="label">Up</span>
     </button>
-    <button class="click-handler down-cell">
+    <button class="click-handler down-cell" data-index={index}>
       <span class="icon arrow-down" />
       <span class="label">Down</span>
     </button>
-    <button class="click-handler delete-cell" data-key={cell.key}>
+    <button class="click-handler delete-cell" data-index={index}>
       <span class="icon trash" />
       <span class="label">Delete</span>
     </button>
