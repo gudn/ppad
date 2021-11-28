@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
   import { writable, Writable } from 'svelte/store'
   import MarkdownIt from 'markdown-it'
+  import emoji from 'markdown-it-emoji'
 
   const currentActiveKey: Writable<number | null> = writable(null)
 
@@ -9,6 +10,8 @@
     xhtmlOut: true,
     linkify: true,
   })
+
+  md.use(emoji)
 </script>
 
 <script lang="ts">
