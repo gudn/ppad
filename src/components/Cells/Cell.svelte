@@ -18,6 +18,7 @@
 
   $: inEditing = $currentActiveKey === cell.key
 
+  let root: HTMLElement
   let content = ''
   let rendered = ''
 
@@ -73,6 +74,22 @@
       currentActiveKey.update(curr => (curr === cell.key ? null : curr)),
     )
 
+    function updateHeight() {
+      node.style.height = '0'
+      const height = node.scrollHeight + 2
+      node.style.height = `${height}px`
+    }
+
+    updateHeight()
+
+    node.addEventListener('keyup', debounce(updateHeight, 50))
+
+    root?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'center',
+    })
+
     return {
       destroy() {
         finishEditing()
@@ -81,7 +98,7 @@
   }
 </script>
 
-<section>
+<section bind:this={root}>
   <div>
     <div on:click|stopPropagation={clickHandler}>
       <div>
@@ -100,5 +117,17 @@
 
   section {
     position: relative;
+  }
+
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.7em;
+    resize: none;
+    outline: none;
+    background-color: $primary-color;
+    color: $text-color;
+    border: 1px solid $border-color;
+    border-radius: 4px;
   }
 </style>
