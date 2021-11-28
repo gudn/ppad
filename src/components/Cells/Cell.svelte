@@ -99,7 +99,7 @@
 <section bind:this={root}>
   <div>
     <div on:click|stopPropagation={clickHandler}>
-      <div>
+      <div class="rendered">
         {@html rendered}
       </div>
       {#if inEditing}
@@ -127,5 +127,12 @@
     color: $text-color;
     border: 1px solid $border-color;
     border-radius: 4px;
+  }
+
+  .rendered {
+    :global(video) {
+      margin: 0 auto;
+      display: block;
+    }
   }
 </style>

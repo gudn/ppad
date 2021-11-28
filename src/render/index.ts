@@ -4,6 +4,29 @@ import sup from 'markdown-it-sup'
 import sub from 'markdown-it-sub'
 import deflist from 'markdown-it-deflist'
 import hljs from 'highlight.js'
+import katex from 'katex'
+import 'katex/contrib/mhchem'
+
+import custom from './custom'
+
+const latex = {
+  display(code: string): string {
+    return katex.renderToString(code, {
+      displayMode: true,
+      output: 'html',
+      throwOnError: false,
+      errorColor: '#ff4444', // NOTE sync with $danger-color
+    })
+  },
+  inline(code: string): string {
+    return katex.renderToString(code, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      errorColor: '#ff4444', // NOTE sync with $danger-color
+    })
+  }
+}
 
 const highlighter = {
   wrap(render: any) {
@@ -67,9 +90,31 @@ md.use(emoji)
 md.use(sup)
 md.use(sub)
 md.use(deflist)
+md.use(custom, {
+  video(url: string) {
+    return `<video controls>
+        <source src="${url}">
+      </video>`
+  },
+  latex(code: string) {
+    return latex.display(code)
+  },
+  latexi(code: string) {
+    return latex.inline(code)
+  },
+  ce(code: string) {
+    return latex.display(`\\ce{${code}}`)
+  },
+  cei(code: string) {
+    return latex.inline(`\\ce{${code}}`)
+  },
+})
+
 md.renderer.rules.fence = highlighter.wrap(md.renderer.rules.fence)
 md.renderer.rules.code_block = highlighter.wrap(md.renderer.rules.code_block)
-md.renderer.rules.code_inline = highlighter.wrap(highlighter.inlineCodeRenderer.bind(null, md))
+md.renderer.rules.code_inline = highlighter.wrap(
+  highlighter.inlineCodeRenderer.bind(null, md),
+)
 
 export default function render(s: string): string {
   return md.render(s)
