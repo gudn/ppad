@@ -22,20 +22,9 @@
       <li>
         <div>File</div>
         <ul>
-          <li>
-            <div>Export</div>
-            <ul>
-              <li>JSON</li>
-              <li>MarkDown</li>
-            </ul>
-          </li>
           <li>Print</li>
           <li class="danger" on:click={deleteDocument}>Delete</li>
         </ul>
-      </li>
-      <li>
-        <div>Edit</div>
-        <ul />
       </li>
     </Dropdown>
   </div>
