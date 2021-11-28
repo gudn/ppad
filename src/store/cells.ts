@@ -26,7 +26,7 @@ export interface Cells {
     createEmptyLast: () => Promise<PCell>
     deleteByRank: (rank: string) => Promise<number>
     swapCells: (rank1: string, rank2: string) => Promise<void>
-    // createEmptyBetween: (rank1: string, rank2: string) => Promise<PCell>
+    createEmptyAfter: (idx: number) => Promise<void>
   }
   clean: () => void
 }
@@ -200,6 +200,36 @@ export default async function cellsFromDocument(
     },
   )
 
+  const createEmptyAfterFx = attach({
+    name: 'createEmptyAfter',
+    source: all,
+    mapParams: (idx: number, cells: PCell[]) => ({ idx, cells }),
+    effect: domain.createEffect(
+      async ({ idx, cells }: { idx: number; cells: PCell[] }) => {
+        if (idx >= cells.length) throw 'invalid index'
+        const rank1 = LexoRank.parse(cells[idx].rank)
+        const rank2 =
+          idx === cells.length - 1
+            ? rank1.genNext()
+            : LexoRank.parse(cells[idx + 1].rank)
+        const newRank = rank1.between(rank2).toString()
+        const cell = {
+          content: {
+            content: '',
+            rendered: '',
+          },
+          rank: newRank,
+        }
+        // Optimize for avoid sorting
+        const key = (await insertOneFx({
+          collection: 'cells',
+          value: { ...cell, rank: `${docKey}-${cell.rank}` },
+        })) as number
+        return [idx, { ...cell, key }]
+      },
+    ),
+  })
+
   all
     .on(createEmptyLastFx.doneData, (cells, newCell) => [...cells, newCell])
     .on(createEmptyFirstFx.doneData, (cells, newCell) => [newCell, ...cells])
@@ -220,7 +250,7 @@ export default async function cellsFromDocument(
             return cell
         }
       })
-    })
+    }).on(createEmptyAfterFx.doneData, (cells, [idx, cell]: [number, PCell]) => [...cells.slice(0, idx + 1), cell, ...cells.slice(idx + 1)])
 
   return {
     all,
@@ -236,6 +266,9 @@ export default async function cellsFromDocument(
       swapCells: async (rank1, rank2) => {
         await swapCellsFx({ irank1: rank1, irank2: rank2 })
       },
+      createEmptyAfter: async (idx: number) => {
+        await createEmptyAfterFx(idx)
+      }
     },
     clean() {
       clearNode(domain)

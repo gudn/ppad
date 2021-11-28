@@ -17,6 +17,8 @@
       case $all.length:
         cells.high.createEmptyLast()
         break
+      default:
+        cells.high.createEmptyAfter(index - 1)
     }
   }
 
