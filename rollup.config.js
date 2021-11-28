@@ -6,6 +6,7 @@ import { terser } from 'rollup-plugin-terser'
 import sveltePreprocess from 'svelte-preprocess'
 import typescript from '@rollup/plugin-typescript'
 import scss from 'rollup-plugin-scss'
+import json from '@rollup/plugin-json'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -49,11 +50,13 @@ export default {
         dev: !production,
       },
     }),
+    json({ compact: production }),
     scss({ output: 'public/build/bundle.css' }),
 
     resolve({
       browser: true,
       dedupe: ['svelte'],
+      preferBuiltins: false
     }),
     commonjs(),
     typescript({

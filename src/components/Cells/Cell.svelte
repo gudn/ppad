@@ -1,6 +1,14 @@
 <script lang="ts" context="module">
   import { writable, Writable } from 'svelte/store'
+  import MarkdownIt from 'markdown-it'
+
   const currentActiveKey: Writable<number | null> = writable(null)
+
+  const md = new MarkdownIt({
+    html: true,
+    xhtmlOut: true,
+    linkify: true,
+  })
 </script>
 
 <script lang="ts">
@@ -22,9 +30,7 @@
   let content = ''
   let rendered = ''
 
-  function render(content: string): string {
-    return content.trim() + '!!!'
-  }
+  const render = (s: string) => md.render(s)
 
   const updateRendered = debounce(
     (content: string) => (rendered = render(content)),
