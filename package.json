@@ -18,6 +18,7 @@
     "cyrillic-to-translit-js": "^3.1.0",
     "effector": "^22.1.2",
     "fuse.js": "^6.4.6",
+    "highlight.js": "^11.3.1",
     "idb": "^6.1.5",
     "katex": "^0.15.1",
     "lodash.debounce": "^4.0.8",
