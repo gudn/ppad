@@ -155,7 +155,7 @@ export const updateFx = attach({
       const keyType = typeof value.key
       if (keyType !== 'number' && keyType !== 'string')
         throw 'value has invalid key'
-      await db.put(collection, value, value.key)
+      await db.put(collection, value)
     },
   ),
 })

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Cells } from '../../store/cells'
+  import type { PCell } from '../../models/cells'
 
   import CellCreateButton from './CellCreateButton.svelte'
   import Cell from './Cell.svelte'
@@ -28,8 +29,7 @@
     else if (target.classList.contains('delete-cell')) {
       const idx = parseInt(target.dataset.index) - 1
       cells.low.deleteByKey($all[idx].key)
-    }
-    else if (target.classList.contains('up-cell')) {
+    } else if (target.classList.contains('up-cell')) {
       const idx = parseInt(target.dataset.index) - 1
       if (idx === 0) return
       else {
@@ -37,8 +37,7 @@
         const rank2 = $all[idx].rank
         cells.high.swapCells(rank1, rank2)
       }
-    }
-    else if (target.classList.contains('down-cell')) {
+    } else if (target.classList.contains('down-cell')) {
       const idx = parseInt(target.dataset.index)
       if (idx === $all.length) return
       else {
@@ -48,12 +47,25 @@
       }
     }
   }
+
+  function deleteHandler(e: CustomEvent<number>) {
+    cells.low.deleteByKey(e.detail)
+  }
+
+  function updateHandler(e: CustomEvent<PCell>) {
+    cells.low.update(e.detail)
+  }
 </script>
 
 <div on:click={clickHandler}>
   <CellCreateButton index={0} />
   {#each $all as cell, index (cell.key)}
-    <Cell {cell} index={index + 1} />
+    <Cell
+      {cell}
+      index={index + 1}
+      on:delete={deleteHandler}
+      on:update={updateHandler}
+    />
     <CellCreateButton index={index + 1} />
   {/each}
 </div>
