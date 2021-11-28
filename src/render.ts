@@ -1,5 +1,8 @@
 import MarkdownIt from 'markdown-it'
 import emoji from 'markdown-it-emoji'
+import sup from 'markdown-it-sup'
+import sub from 'markdown-it-sub'
+import deflist from 'markdown-it-deflist'
 import hljs from 'highlight.js'
 
 const highlighter = {
@@ -57,9 +60,13 @@ const md = new MarkdownIt({
   xhtmlOut: true,
   linkify: true,
   highlight: highlighter.highlight,
+  typographer: true,
 })
 
 md.use(emoji)
+md.use(sup)
+md.use(sub)
+md.use(deflist)
 md.renderer.rules.fence = highlighter.wrap(md.renderer.rules.fence)
 md.renderer.rules.code_block = highlighter.wrap(md.renderer.rules.code_block)
 md.renderer.rules.code_inline = highlighter.wrap(highlighter.inlineCodeRenderer.bind(null, md))
