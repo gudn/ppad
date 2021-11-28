@@ -1,17 +1,7 @@
 <script lang="ts" context="module">
   import { writable, Writable } from 'svelte/store'
-  import MarkdownIt from 'markdown-it'
-  import emoji from 'markdown-it-emoji'
 
   const currentActiveKey: Writable<number | null> = writable(null)
-
-  const md = new MarkdownIt({
-    html: true,
-    xhtmlOut: true,
-    linkify: true,
-  })
-
-  md.use(emoji)
 </script>
 
 <script lang="ts">
@@ -19,6 +9,7 @@
   import debounce from 'lodash.debounce'
 
   import type { PCell } from '../../models/cells'
+  import renderMd from '../../render'
 
   import CellButtons from './CellButtons.svelte'
 
@@ -33,10 +24,8 @@
   let content = ''
   let rendered = ''
 
-  const render = (s: string) => md.render(s)
-
   const updateRendered = debounce(
-    (content: string) => (rendered = render(content)),
+    (content: string) => (rendered = renderMd(content)),
     500,
   )
 
@@ -47,7 +36,7 @@
     if (!content) dispatch('delete', cell.key)
     else if (content !== cell.content.content) {
       try {
-        rendered = render(content)
+        rendered = renderMd(content)
         dispatch('update', {
           ...cell,
           content: {
