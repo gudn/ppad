@@ -28,6 +28,7 @@
     "markdown-it-emoji": "^2.0.0",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
+    "mathjs": "^10.0.0",
     "node-sass": "^6.0.1",
     "rollup": "^2.3.4",
     "rollup-plugin-livereload": "^2.0.0",

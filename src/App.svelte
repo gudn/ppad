@@ -24,13 +24,9 @@
     <Route path="/doc/:key" component={Document} />
   </Router>
 {:catch err}
-  <p class="error">{err.toString()}</p>
+  <p class="danger">{err.toString()}</p>
 {/await}
 
 <style lang="scss">
   @import './styles/variables.scss';
-
-  .error {
-    color: $danger-color;
-  }
 </style>

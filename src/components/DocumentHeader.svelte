@@ -49,9 +49,5 @@
     hr {
       margin-block-end: 0;
     }
-
-    .danger {
-      color: $danger-color;
-    }
   }
 </style>

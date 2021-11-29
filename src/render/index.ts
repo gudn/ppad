@@ -9,6 +9,10 @@ import latex from './latex'
 import texMath from './texMath'
 import amMath from './amMath'
 
+import * as mathjs from 'mathjs'
+
+const math = mathjs.create(mathjs.all, {})
+
 const codeRender = {
   inline(md: MarkdownIt, tokens: any, idx: number, options: any): string {
     const code = tokens[idx]
@@ -33,6 +37,18 @@ const codeRender = {
       case 'asciimath':
       case 'am':
         return latex.inlineAm(code.content)
+      case 'cc':
+        let res: { toTex: () => string }
+        try {
+          res = math.evaluate(code.content)
+        } catch (e) {
+          return `<span class="danger">${e.toString()}</span>`
+        }
+        try {
+          return latex.inline(res.toTex())
+        } catch (e) {
+          return res.toString()
+        }
       case 'latex-source':
       case 'asciimath-source':
         lang = lang.slice(0, -7)
@@ -54,6 +70,18 @@ const codeRender = {
       case 'asciimath':
       case 'am':
         return latex.displayAm(code)
+      case 'cc':
+        let res: { toTex: () => string }
+        try {
+          res = math.evaluate(code)
+        } catch (e) {
+          return `<span class="danger">${e.toString()}</span>`
+        }
+        try {
+          return latex.inline(res.toTex())
+        } catch (e) {
+          return res.toString()
+        }
       case 'latex-source':
       case 'asciimath-source':
         lang = lang.slice(0, -7)
