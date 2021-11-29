@@ -6,6 +6,8 @@
 
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte'
+  import { Splide, SplideSlide } from '@splidejs/svelte-splide'
+  import '@splidejs/splide/dist/css/splide.min.css'
   import debounce from 'lodash.debounce'
 
   import type { PCell } from '../../models/cells'
@@ -102,6 +104,19 @@
 <section bind:this={root}>
   <div>
     <div on:click|stopPropagation={clickHandler}>
+      {#if cell.drawing}
+        <div on:click|stopPropagation>
+          <Splide>
+            {#each Object.entries(cell.drawing.svgs) as [name, content] (name)}
+              <SplideSlide>
+                <div class="svg-wrapper">
+                  {@html content}
+                </div>
+              </SplideSlide>
+            {/each}
+          </Splide>
+        </div>
+      {/if}
       <div class="rendered">
         {@html rendered}
       </div>
@@ -137,5 +152,12 @@
       margin: 0 auto;
       display: block;
     }
+  }
+
+  .svg-wrapper {
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
   }
 </style>
