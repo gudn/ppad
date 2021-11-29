@@ -35,7 +35,7 @@
 
   function finishEditing() {
     content = content.trim()
-    if (!content) dispatch('delete', cell.key)
+    if (!content && cell.drawing === null) dispatch('delete', cell.key)
     else if (content !== cell.content.content) {
       try {
         rendered = renderMd(content)
@@ -47,7 +47,7 @@
               rendered,
             },
           })
-        else dispatch('delete', cell.key)
+        else if (cell.drawing === null) dispatch('delete', cell.key)
       } catch (e) {
         console.error(e)
         content = cell.content.content
@@ -159,5 +159,9 @@
     margin: 0 auto;
     justify-content: center;
     align-items: center;
+
+    :global(svg text) {
+      fill: $text-color;
+    }
   }
 </style>

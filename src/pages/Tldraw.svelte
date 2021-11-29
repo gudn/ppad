@@ -16,31 +16,31 @@
 
   let root: HTMLElement
   let cell: PCell | null = null
+  let app: TldrawApp | null = null
 
-  function shapes(app: TldrawApp): { [page: string]: string } {
-    const res = {}
+  async function saveChanges() {
+    const svgs = {}
+    const selected = app.currentPageId
     for (const [page, content] of Object.entries(app.document.pages)) {
+      app.changePage(page)
       const svg = app.copySvg(Object.keys(content.shapes), page)
       if (svg) {
-        res[page] = svg
+        svgs[page] = svg
       }
     }
-    return res
-  }
-
-  function onChange(app: TldrawApp) {
-    const svgs = shapes(app)
+    app.changePage(selected)
     let value: PCell = {
       ...cell,
       drawing: Object.keys(svgs).length ? { doc: app.document, svgs } : null,
     }
-    updateFx({
+    await updateFx({
       collection: 'cells',
-      value
+      value,
     })
   }
 
-  function mountedTldraw(app: TldrawApp) {
+  function mountedTldraw(received: TldrawApp) {
+    app = received
     app.toggleDarkMode()
   }
 
@@ -54,7 +54,6 @@
     document.head.appendChild(styleChild)
     ReactDOM.render(
       React.createElement(Tldraw, {
-        onChange: debounce(onChange, 500),
         onMount: mountedTldraw,
         ...doc,
       }),
@@ -62,13 +61,15 @@
     )
   })
 
-  onDestroy(() => {
+  onDestroy(async () => {
+    await saveChanges()
     try {
       ReactDOM.unmountComponentAtNode(root)
     } catch (e) {
       console.error(e)
     }
     document.head.removeChild(styleChild)
+    app = null
   })
 </script>
 
