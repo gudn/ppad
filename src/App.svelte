@@ -8,16 +8,12 @@
 
   import { openDBFx } from './store/db'
 
-  let dbPromise: Promise<any>
-
-  onMount(() => {
-    dbPromise = openDBFx()
-  })
+  let dbPending = openDBFx.pending
 </script>
 
-{#await dbPromise}
+{#if $dbPending}
   Waiting database...
-{:then _}
+{:else}
   <Router primary={false}>
     <Route path="/" let:navigate>
       <Home {navigate} />
@@ -25,9 +21,7 @@
     <Route path="/doc/:key" component={Document} />
     <Route path="/draw/:key" component={Tldraw} />
   </Router>
-{:catch err}
-  <p class="danger">{err.toString()}</p>
-{/await}
+{/if}
 
 <style lang="scss">
   @import './styles/variables.scss';

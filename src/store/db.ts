@@ -38,6 +38,8 @@ export const db = createStore<IDBPDatabase | null>(null, { name: 'db' }).on(
   (_, newDB) => newDB,
 )
 
+openDBFx()
+
 export const transactionFx = attach({
   name: 'transaction',
   source: db,
