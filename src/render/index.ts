@@ -5,27 +5,8 @@ import sup from 'markdown-it-sup'
 import sub from 'markdown-it-sub'
 import deflist from 'markdown-it-deflist'
 import hljs from 'highlight.js'
-import katex from 'katex'
-import 'katex/contrib/mhchem'
-
-const latex = {
-  display(code: string): string {
-    return katex.renderToString(code, {
-      displayMode: true,
-      output: 'html',
-      throwOnError: false,
-      errorColor: '#ff4444', // NOTE sync with $danger-color
-    })
-  },
-  inline(code: string): string {
-    return katex.renderToString(code, {
-      displayMode: false,
-      output: 'html',
-      throwOnError: false,
-      errorColor: '#ff4444', // NOTE sync with $danger-color
-    })
-  },
-}
+import latex from './latex'
+import texMath from './texMath'
 
 const codeRender = {
   inline(md: MarkdownIt, tokens: any, idx: number, options: any): string {
@@ -194,6 +175,7 @@ md.use(emoji)
 md.use(sup)
 md.use(sub)
 md.use(deflist)
+md.use(texMath)
 
 export default function render(s: string): string {
   return md.render(s)
