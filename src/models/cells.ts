@@ -11,5 +11,10 @@ export interface PCell {
   // manually setted by lexorank strategy
   rank: string
   content: PContentItem
-  drawing: TDDocument | null
+  drawing: {
+    doc: TDDocument,
+    svgs: {
+      [key: string]: string
+    }
+  } | null
 }

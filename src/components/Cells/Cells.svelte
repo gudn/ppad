@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { navigate } from 'svelte-navigator'
+
   import type { Cells } from '../../store/cells'
   import type { PCell } from '../../models/cells'
 
@@ -47,6 +49,11 @@
         const rank2 = $all[idx].rank
         cells.high.swapCells(rank1, rank2)
       }
+    } else if (target.classList.contains('draw-cell')) {
+      const idx = parseInt(target.dataset.index)
+      const cell = $all[idx - 1]
+      if (!cell) throw 'Invalid index'
+      navigate(`/draw/${cell.key}`)
     }
   }
 
