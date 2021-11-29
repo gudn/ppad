@@ -7,6 +7,7 @@ import deflist from 'markdown-it-deflist'
 import hljs from 'highlight.js'
 import latex from './latex'
 import texMath from './texMath'
+import amMath from './amMath'
 
 const codeRender = {
   inline(md: MarkdownIt, tokens: any, idx: number, options: any): string {
@@ -186,6 +187,7 @@ md.use(sup)
 md.use(sub)
 md.use(deflist)
 md.use(texMath)
+md.use(amMath)
 
 export default function render(s: string): string {
   return md.render(s)
