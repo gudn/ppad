@@ -29,8 +29,12 @@ const codeRender = {
         return latex.inline(code.content)
       case 'ce':
         return latex.inline(`\\ce{${code.content}}`)
+      case 'asciimath':
+      case 'am':
+        return latex.inlineAm(code.content)
       case 'latex-source':
-        lang = 'latex'
+      case 'asciimath-source':
+        lang = lang.slice(0, -7)
       default:
         const highlighted = options.highlight(code.content, lang)
         const cls = lang
@@ -46,8 +50,12 @@ const codeRender = {
         return latex.display(code)
       case 'ce':
         return latex.display(`\\ce{${code}}`)
+      case 'asciimath':
+      case 'am':
+        return latex.displayAm(code)
       case 'latex-source':
-        lang = 'latex'
+      case 'asciimath-source':
+        lang = lang.slice(0, -7)
       default:
         try {
           return lang
@@ -139,6 +147,8 @@ md.renderer.rules.fence = (
     switch (langName) {
       case 'latex':
       case 'ce':
+      case 'am':
+      case 'asciimath':
         return highlighted
       default:
         const i = token.attrIndex('class')

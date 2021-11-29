@@ -15,6 +15,7 @@
     "@rollup/plugin-typescript": "^8.0.0",
     "@tsconfig/svelte": "^2.0.0",
     "@wewatch/lexorank": "^1.0.3",
+    "am-parse": "github:gudn/am-parse-js#e1aa7a6845a48eb67cb28e75f017158044548817",
     "cyrillic-to-translit-js": "^3.1.0",
     "effector": "^22.1.2",
     "fuse.js": "^6.4.6",
