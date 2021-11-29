@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import type { NavigateFn } from 'svelte-navigator'
   import { attach, createEffect, createEvent, restore, sample } from 'effector'
-  import Fuse from 'fuse.js'
+  import type Fuse from 'fuse.js'
 
   import Input from '../components/Input.svelte'
 
@@ -35,12 +35,7 @@
 
   const searchUpdate = createEvent<string>('searchUpdate')
   sample({
-    source: allDocuments.map(
-      docs =>
-        new Fuse(docs, {
-          keys: ['title'],
-        }),
-    ),
+    source: documents.fuse,
     clock: searchUpdate,
     fn: (fuse, value) => ({ fuse, value }),
     target: createEffect((params: { fuse: Fuse<PDocument>; value: string }) => {

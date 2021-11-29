@@ -1,8 +1,16 @@
 import CyrillicToTranslit from 'cyrillic-to-translit-js'
 import { attach, createEffect, restore } from 'effector'
+import Fuse from 'fuse.js'
 
 import type { PDocument } from '../models/documents'
-import { deleteFx, deleteWhereFx, insertFx, selectAllFx, selectFx, selectKeyBy } from './db'
+import {
+  deleteFx,
+  deleteWhereFx,
+  insertFx,
+  selectAllFx,
+  selectFx,
+  selectKeyBy,
+} from './db'
 
 const transliter = new CyrillicToTranslit()
 
@@ -32,20 +40,26 @@ const deleteDocumentFx = createEffect(async (key: string) => {
   await deleteWhereFx({
     collection: 'cells',
     index: 'pid-rank',
-    where: IDBKeyRange.bound(`${key}-`, `${key}.`, false, false)
+    where: IDBKeyRange.bound(`${key}-`, `${key}.`, false, false),
   })
-  await deleteFx([
-    { collection: 'documents', key },
-  ])
+  await deleteFx([{ collection: 'documents', key }])
   return key
 })
 
+const all = restore<PDocument[]>(selectAllDocumentsFx.doneData, [])
+  .on(createDocumentFx.doneData, (docs, newDoc) => [...docs, newDoc])
+  .on(deleteDocumentFx.doneData, (docs, removedKey) =>
+    docs.filter(it => it.key !== removedKey),
+  )
+
 const documents = {
-  all: restore<PDocument[]>(selectAllDocumentsFx.doneData, [])
-    .on(createDocumentFx.doneData, (docs, newDoc) => [...docs, newDoc])
-    .on(deleteDocumentFx.doneData, (docs, removedKey) =>
-      docs.filter(it => it.key !== removedKey),
-    ),
+  all,
+  fuse: all.map(
+    docs =>
+      new Fuse(docs, {
+        keys: ['title'],
+      }),
+  ),
   refreshAll: selectAllDocumentsFx,
   create: createDocumentFx,
   delete_: deleteDocumentFx,
