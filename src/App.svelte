@@ -4,6 +4,7 @@
 
   import Home from './pages/Home.svelte'
   import Document from './pages/Document.svelte'
+  import Tldraw from './pages/Tldraw.svelte'
 
   import { openDBFx } from './store/db'
 
@@ -22,6 +23,7 @@
       <Home {navigate} />
     </Route>
     <Route path="/doc/:key" component={Document} />
+    <Route path="/draw/:key" component={Tldraw} />
   </Router>
 {:catch err}
   <p class="danger">{err.toString()}</p>

@@ -7,6 +7,7 @@ import sveltePreprocess from 'svelte-preprocess'
 import typescript from '@rollup/plugin-typescript'
 import scss from 'rollup-plugin-scss'
 import json from '@rollup/plugin-json'
+import replace from '@rollup/plugin-replace'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -43,7 +44,17 @@ export default {
     name: 'app',
     file: 'public/build/bundle.js',
   },
+  onwarn(m, warn) {
+    if (/mobx-react-lite/.test(m)) return
+    warn(m)
+  },
   plugins: [
+    replace({
+      values: {
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      },
+      preventAssignment: true
+    }),
     svelte({
       preprocess: sveltePreprocess({ sourceMap: !production }),
       compilerOptions: {
@@ -56,7 +67,7 @@ export default {
     resolve({
       browser: true,
       dedupe: ['svelte'],
-      preferBuiltins: false
+      preferBuiltins: false,
     }),
     commonjs(),
     typescript({
