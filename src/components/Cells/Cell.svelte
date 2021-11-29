@@ -47,6 +47,7 @@
           })
         else dispatch('delete', cell.key)
       } catch (e) {
+        console.error(e)
         content = cell.content.content
         finishEditing()
       }
