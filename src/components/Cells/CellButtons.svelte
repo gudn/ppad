@@ -6,6 +6,10 @@
 
 <div class="outer">
   <div class="inner">
+    <button class="click-handler draw-cell" data-index={index}>
+      <span class="icon pencil" />
+      <span class="label">Drawing</span>
+    </button>
     <button class="click-handler up-cell" data-index={index}>
       <span class="icon arrow-up" />
       <span class="label">Up</span>
@@ -73,6 +77,10 @@
 
         &.trash {
           background-image: url('/icons/trash.svg');
+        }
+
+        &.pencil {
+          background-image: url('/icons/pencil.svg');
         }
 
         background-size: 14px 14px;

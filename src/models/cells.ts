@@ -1,3 +1,5 @@
+import type { TDDocument } from '@tldraw/tldraw'
+
 export interface PContentItem {
   content: string
   rendered: string
@@ -9,4 +11,5 @@ export interface PCell {
   // manually setted by lexorank strategy
   rank: string
   content: PContentItem
+  drawing: TDDocument | null
 }

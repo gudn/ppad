@@ -125,6 +125,7 @@ export default async function cellsFromDocument(
           content: '',
           rendered: '',
         },
+        drawing: null,
         rank: lastRank.genNext().toString(),
       }
       const key = (await insertOneFx({
@@ -148,6 +149,7 @@ export default async function cellsFromDocument(
           content: '',
           rendered: '',
         },
+        drawing: null,
         rank: firstRank.genPrev().toString(),
       }
       // Optimize for avoid sorting
@@ -218,6 +220,7 @@ export default async function cellsFromDocument(
             content: '',
             rendered: '',
           },
+          drawing: null,
           rank: newRank,
         }
         // Optimize for avoid sorting

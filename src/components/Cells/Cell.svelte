@@ -37,13 +37,15 @@
     else if (content !== cell.content.content) {
       try {
         rendered = renderMd(content)
-        dispatch('update', {
-          ...cell,
-          content: {
-            content,
-            rendered,
-          },
-        })
+        if (rendered)
+          dispatch('update', {
+            ...cell,
+            content: {
+              content,
+              rendered,
+            },
+          })
+        else dispatch('delete', cell.key)
       } catch (e) {
         content = cell.content.content
         finishEditing()
