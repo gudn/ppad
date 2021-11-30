@@ -13,6 +13,10 @@
   function deleteDocument() {
     documents.delete_(doc.key).then(() => navigate('/'))
   }
+
+  function openView() {
+    window.open(`/view/${doc.key}`, '_blank').focus()
+  }
 </script>
 
 <header>
@@ -22,7 +26,7 @@
       <li>
         <div>File</div>
         <ul>
-          <li>Print</li>
+          <li on:click={openView}>Print</li>
           <li class="danger" on:click={deleteDocument}>Delete</li>
         </ul>
       </li>
