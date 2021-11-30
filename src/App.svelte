@@ -5,6 +5,7 @@
   import Home from './pages/Home.svelte'
   import Document from './pages/Document.svelte'
   import Tldraw from './pages/Tldraw.svelte'
+  import View from './pages/View.svelte'
 
   import { openDBFx } from './store/db'
 
@@ -19,6 +20,7 @@
       <Home {navigate} />
     </Route>
     <Route path="/doc/:key" component={Document} />
+    <Route path="/view/:key" component={View} />
     <Route path="/draw/:doc/:key" component={Tldraw} />
   </Router>
 {/if}
