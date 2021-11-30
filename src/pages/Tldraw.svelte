@@ -7,6 +7,7 @@
   import { navigate } from 'svelte-navigator'
 
   import type { PCell } from '../models/cells'
+  import { exportSvgs } from '../utils/drawing'
   import { selectFx, updateFx } from '../store/db'
 
   const styleChild: HTMLStyleElement = document.createElement('style')
@@ -19,16 +20,7 @@
   let app: TldrawApp | null = null
 
   async function saveChanges() {
-    const svgs = {}
-    const selected = app.currentPageId
-    for (const [page, content] of Object.entries(app.document.pages)) {
-      app.changePage(page)
-      const svg = app.copySvg(Object.keys(content.shapes), page)
-      if (svg) {
-        svgs[page] = svg
-      }
-    }
-    app.changePage(selected)
+    const svgs = exportSvgs(app)
     let value: PCell = {
       ...cell,
       drawing: Object.keys(svgs).length ? { doc: app.document, svgs } : null,
