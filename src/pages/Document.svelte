@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
-  import { useLocation, navigate, Link } from 'svelte-navigator'
+  import { useLocation, Link } from 'svelte-navigator'
 
   import type { PDocument } from '../models/documents'
   import documents from '../store/documents'
