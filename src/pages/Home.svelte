@@ -11,6 +11,7 @@
 
   const allDocuments = documents.all
   export let navigate: NavigateFn
+  let searchValue = ''
 
   let documentsList: HTMLElement
   const selectDocument = createEvent<string | null>('selectDocument')
@@ -75,6 +76,14 @@
     const key = target.parentElement.dataset.dockey
     navigate(`/doc/${key}`)
   }
+
+  function newHandler() {
+    searchValue = searchValue.trim()
+    if (searchValue) {
+      createDocument(searchValue)
+      searchValue = ''
+    }
+  }
 </script>
 
 <div class="wrapper">
@@ -84,12 +93,13 @@
       <Input
         on:submit={searchSubmit}
         on:update={e => searchUpdate(e.detail.value)}
+        bind:value={searchValue}
         autofocus
       >
         <span class="icon" slot="icon" />
       </Input>
     </div>
-    <button class="new">New</button>
+    <button class="new" on:click={newHandler}>New</button>
   </header>
 
   <main on:click={openHandler} bind:this={documentsList}>

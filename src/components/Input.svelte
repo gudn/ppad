@@ -5,7 +5,7 @@
 
   export let autofocus: boolean = false
 
-  let value: string = ''
+  export let value: string = ''
   let prev: string = ''
   let input: HTMLInputElement
   const dispatch = debounce(createEventDispatcher(), 200)
