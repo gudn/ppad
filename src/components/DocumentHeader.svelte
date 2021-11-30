@@ -7,6 +7,7 @@
   import Dropdown from '../components/Dropdown.svelte'
 
   export let doc: PDocument
+  export let toJson: (doc: PDocument) => Promise<string>
 
   const navigate = useNavigate()
 
@@ -16,6 +17,27 @@
 
   function openView() {
     window.open(`/view/${doc.key}`, '_blank').focus()
+  }
+
+  function download(filename: string, text: string) {
+    var elem = document.createElement('a')
+    elem.setAttribute(
+      'href',
+      'data:application/json;charset=utf-8,' + encodeURIComponent(text),
+    )
+    elem.setAttribute('download', filename)
+
+    elem.style.display = 'none'
+    document.body.appendChild(elem)
+
+    elem.click()
+
+    document.body.removeChild(elem)
+  }
+
+  async function exportJson() {
+    const json = await toJson(doc)
+    download(`${doc.key}.json`, json)
   }
 </script>
 
@@ -27,6 +49,7 @@
         <div>File</div>
         <ul>
           <li on:click={openView}>Print</li>
+          <li on:click={exportJson}>Export JSON</li>
           <li class="danger" on:click={deleteDocument}>Delete</li>
         </ul>
       </li>

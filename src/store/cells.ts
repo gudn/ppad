@@ -3,6 +3,7 @@ import { LexoRank } from '@wewatch/lexorank'
 import { attach, clearNode, createDomain, Store } from 'effector'
 
 import type { PCell } from '../models/cells'
+import type { PDocument } from '../models/documents'
 import {
   deleteFx,
   deleteWhereFx,
@@ -27,6 +28,7 @@ export interface Cells {
     deleteByRank: (rank: string) => Promise<number>
     swapCells: (rank1: string, rank2: string) => Promise<void>
     createEmptyAfter: (idx: number) => Promise<void>
+    toJson: (doc: PDocument) => Promise<string>
   }
   clean: () => void
 }
@@ -233,6 +235,22 @@ export default async function cellsFromDocument(
     ),
   })
 
+  const toJson = attach({
+    name: 'toJson',
+    source: all,
+    mapParams: (doc, cells) => ({ doc, cells }),
+    effect: domain.createEffect(({ doc, cells }) => {
+      return JSON.stringify({
+        title: doc.title,
+        key: doc.key,
+        cells: cells.map((cell: PCell) => {
+          const { key: _, ...rest } = cell
+          return rest
+        }),
+      })
+    }),
+  })
+
   all
     .on(createEmptyLastFx.doneData, (cells, newCell) => [...cells, newCell])
     .on(createEmptyFirstFx.doneData, (cells, newCell) => [newCell, ...cells])
@@ -253,7 +271,12 @@ export default async function cellsFromDocument(
             return cell
         }
       })
-    }).on(createEmptyAfterFx.doneData, (cells, [idx, cell]: [number, PCell]) => [...cells.slice(0, idx + 1), cell, ...cells.slice(idx + 1)])
+    })
+    .on(createEmptyAfterFx.doneData, (cells, [idx, cell]: [number, PCell]) => [
+      ...cells.slice(0, idx + 1),
+      cell,
+      ...cells.slice(idx + 1),
+    ])
 
   return {
     all,
@@ -271,7 +294,8 @@ export default async function cellsFromDocument(
       },
       createEmptyAfter: async (idx: number) => {
         await createEmptyAfterFx(idx)
-      }
+      },
+      toJson
     },
     clean() {
       clearNode(domain)

@@ -35,7 +35,7 @@
 
 <div class="wrapper">
   {#if doc}
-    <DocumentHeader {doc} />
+    <DocumentHeader {doc} toJson={cells.high.toJson} />
   {/if}
 
   <main>
