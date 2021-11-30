@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
-  import { Link } from 'svelte-navigator'
+  import { useLocation, navigate, Link } from 'svelte-navigator'
 
   import type { PDocument } from '../models/documents'
   import documents from '../store/documents'
@@ -14,11 +14,17 @@
   let doc: PDocument | null = null
   let cells: Cells | null = null
 
+  const location = useLocation()
+
   onMount(async () => {
     ;[doc, cells] = await Promise.all([
       documents.getDocument(key),
       getCells(key),
     ])
+    if ($location.state.reload === true) {
+      window.history.replaceState({}, '')
+      window.location.reload()
+    }
   })
 
   onDestroy(() => {
@@ -33,7 +39,7 @@
 
   <main>
     {#if doc && cells}
-      <CellsComponent {cells} />
+      <CellsComponent {cells} doc={doc.key} />
     {:else}
       <Link to="/" replace>Return to list</Link>
     {/if}

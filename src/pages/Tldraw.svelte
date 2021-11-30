@@ -2,8 +2,7 @@
   import { onDestroy, onMount } from 'svelte'
   import React from 'react'
   import ReactDOM from 'react-dom'
-  import { Tldraw, TldrawApp, TDDocument } from '@tldraw/tldraw'
-  import debounce from 'lodash.debounce'
+  import { Tldraw, TldrawApp } from '@tldraw/tldraw'
   import { navigate } from 'svelte-navigator'
 
   import type { PCell } from '../models/cells'
@@ -14,6 +13,7 @@
   styleChild.innerText = `* { box-sizing: border-box; }`
 
   export let key: string
+  export let doc: string
 
   let root: HTMLElement
   let cell: PCell | null = null
@@ -28,6 +28,9 @@
     await updateFx({
       collection: 'cells',
       value,
+    })
+    navigate(`/doc/${doc}`, {
+      state: { reload: true }
     })
   }
 
@@ -55,11 +58,6 @@
 
   onDestroy(async () => {
     await saveChanges()
-    try {
-      ReactDOM.unmountComponentAtNode(root)
-    } catch (e) {
-      console.error(e)
-    }
     document.head.removeChild(styleChild)
     app = null
   })

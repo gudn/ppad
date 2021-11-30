@@ -19,7 +19,7 @@
       <Home {navigate} />
     </Route>
     <Route path="/doc/:key" component={Document} />
-    <Route path="/draw/:key" component={Tldraw} />
+    <Route path="/draw/:doc/:key" component={Tldraw} />
   </Router>
 {/if}
 

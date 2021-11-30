@@ -5,9 +5,9 @@ import { Utils } from '@tldraw/core'
 export function exportSvgs(app: TldrawApp): { [page: string]: string } {
   const svgs = {}
   const selected = app.currentPageId
-  for (const [page, content] of Object.entries(app.document.pages)) {
+  for (const [page, _] of Object.entries(app.document.pages)) {
     app.changePage(page)
-    const svg = app.copySvg(Object.keys(content.shapes), page)
+    const svg = exportPage(app, page)
     if (svg) {
       svgs[page] = svg
     }
@@ -21,7 +21,7 @@ function exportPage(app: TldrawApp, pageId: string): string | undefined {
   const ids = Object.keys(page.shapes)
   if (ids.length === 0) return
 
-  const shapes = ids.map(id => this.getShape(id, pageId))
+  const shapes = ids.map(id => app.getShape(id, pageId))
   const commonBounds = Utils.getCommonBounds(
     shapes.map(shape => getShapeUtil(shape).getRotatedBounds(shape)),
   )
@@ -61,7 +61,7 @@ function exportPage(app: TldrawApp, pageId: string): string | undefined {
 
       // Get the shape's children as elements
       shape.children
-        .map((childId: any) => this.getShape(childId, pageId))
+        .map((childId: any) => app.getShape(childId, pageId))
         .map(getSvgElementForShape)
         .filter(Boolean)
         .forEach((element: any) => g.appendChild(element!))

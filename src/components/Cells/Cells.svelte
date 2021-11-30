@@ -8,6 +8,7 @@
   import Cell from './Cell.svelte'
 
   export let cells: Cells
+  export let doc: string
 
   $: all = cells.all
 
@@ -53,7 +54,7 @@
       const idx = parseInt(target.dataset.index)
       const cell = $all[idx - 1]
       if (!cell) throw 'Invalid index'
-      navigate(`/draw/${cell.key}`)
+      navigate(`/draw/${doc}/${cell.key}`)
     }
   }
 
