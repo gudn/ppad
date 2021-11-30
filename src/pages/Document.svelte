@@ -21,6 +21,7 @@
       documents.getDocument(key),
       getCells(key),
     ])
+    document.title = doc.title
     if ($location.state.reload === true) {
       window.history.replaceState({}, '')
       window.location.reload()
