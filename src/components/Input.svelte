@@ -56,8 +56,8 @@
       flex: 1;
       background-color: transparent;
       color: $text-color;
-      margin-left: -24px;
-      padding: 1px 24px;
+      margin-left: -29px;
+      padding: 1px 29px;
       z-index: 1;
 
       &:active {
@@ -67,7 +67,7 @@
 
     .slot-wrapper {
       display: inline-flex;
-      width: 24px;
+      width: 29px;
       padding: 4px;
       box-sizing: border-box;
     }

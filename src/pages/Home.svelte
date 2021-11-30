@@ -129,7 +129,7 @@
 
         span.icon {
           background-image: url('/icons/search.svg');
-          background-size: 18px 18px;
+          background-size: 21px 21px;
           min-width: 100%;
           min-height: 100%;
           filter: invert(93.3%);

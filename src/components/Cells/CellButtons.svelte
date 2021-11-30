@@ -83,9 +83,9 @@
           background-image: url('/icons/pencil.svg');
         }
 
-        background-size: 14px 14px;
-        min-width: 14px;
-        min-height: 14px;
+        background-size: 17px 17px;
+        min-width: 17px;
+        min-height: 17px;
         filter: invert(93.3%);
         margin-right: 0.3em;
       }
