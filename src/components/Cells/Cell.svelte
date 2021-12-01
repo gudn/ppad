@@ -145,6 +145,7 @@
     color: $text-color;
     border: 1px solid $border-color;
     border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .rendered {
