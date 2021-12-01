@@ -100,6 +100,7 @@
       </Input>
     </div>
     <button class="new" on:click={newHandler}>New</button>
+    <button on:click={() => navigate('/import')}>Import</button>
   </header>
 
   <main on:click={openHandler} bind:this={documentsList}>

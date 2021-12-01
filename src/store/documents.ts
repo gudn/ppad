@@ -9,7 +9,6 @@ import {
   insertFx,
   selectAllFx,
   selectFx,
-  selectKeyBy,
 } from './db'
 
 const transliter = new CyrillicToTranslit()
