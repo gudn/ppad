@@ -1,4 +1,5 @@
 const staticCacheName = 'ppad-v1'
+const cdnCacheName = 'cdn-v1'
 
 const coreFiles = [
   '/favicon.png',
@@ -25,12 +26,13 @@ self.addEventListener('activate', async () => {
   await Promise.all(
     cacheNames
       .filter(name => name !== staticCacheName)
+      .filter(name => name !== cdnCacheName)
       .map(name => caches.delete(name)),
   )
 })
 
 async function save(req) {
-  const cache = await caches.open(staticCacheName)
+  const cache = await caches.open(cdnCacheName)
   await cache.add(req)
 }
 
