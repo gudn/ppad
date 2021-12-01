@@ -148,9 +148,10 @@
   }
 
   .rendered {
-    :global(video) {
-      margin: 0 auto;
+    :global(iframe), :global(video), :global(img) {
+      margin: 0.3em auto;
       display: block;
+      max-width: 100%;
     }
   }
 
