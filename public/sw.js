@@ -16,10 +16,7 @@ const coreFiles = [
   '/icons/trash.svg',
 ]
 
-self.addEventListener('install', async () => {
-  const cache = await caches.open(staticCacheName)
-  await cache.addAll(coreFiles)
-})
+self.addEventListener('install', cacheAll)
 
 self.addEventListener('activate', async () => {
   const cacheNames = await caches.keys()
@@ -30,6 +27,11 @@ self.addEventListener('activate', async () => {
       .map(name => caches.delete(name)),
   )
 })
+
+async function cacheAll() {
+  const cache = await caches.open(staticCacheName)
+  await cache.addAll(coreFiles)
+}
 
 async function save(req) {
   const cache = await caches.open(cdnCacheName)
@@ -46,7 +48,12 @@ async function cacheAndSave(req) {
   const url = new URL(req.url)
   let cached = await caches.match(req)
   if (!cached && url.origin === location.origin) {
-    cached = await caches.match(new Request('/index.html'))
+    if (
+      /^\/(?:doc|view|draw|import)/.test(url.pathname) ||
+      url.pathname === '/'
+    )
+      cached = await caches.match('/index.html')
+    else cacheAll()
   }
   // cache cdn
   if (!cached && isCdn(url)) {
