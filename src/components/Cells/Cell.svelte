@@ -77,13 +77,14 @@
       currentActiveKey.update(curr => (curr === cell.key ? null : curr)),
     )
 
-    function updateHeight() {
+    function updateHeight(e: KeyboardEvent | null) {
+      if (e?.code === 'Escape') node.blur()
       node.style.height = '0'
       const height = node.scrollHeight + 2
       node.style.height = `${height}px`
     }
 
-    updateHeight()
+    updateHeight(null)
 
     node.addEventListener('keyup', debounce(updateHeight, 50))
 
