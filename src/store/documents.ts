@@ -3,13 +3,7 @@ import { attach, createEffect, restore } from 'effector'
 import Fuse from 'fuse.js'
 
 import type { PDocument } from '../models/documents'
-import {
-  deleteFx,
-  deleteWhereFx,
-  insertFx,
-  selectAllFx,
-  selectFx,
-} from './db'
+import { deleteFx, deleteWhereFx, insertFx, selectAllFx, selectFx } from './db'
 
 const transliter = new CyrillicToTranslit()
 
@@ -26,7 +20,8 @@ const selectDocumentFx = attach({
 })
 
 const createDocumentFx = createEffect(async (title: string) => {
-  const key = transliter.transform(title, '_')
+  title = title.replace(/\s/gm, ' ')
+  const key = transliter.transform(title, '_').replace(/\//g, '__slash__')
   const doc = { key, title }
   await insertFx([
     { collection: 'documents', value: doc },
