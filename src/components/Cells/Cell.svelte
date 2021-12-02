@@ -31,6 +31,12 @@
     500,
   )
 
+  function htmlIsEmpty(html: string): boolean {
+    const elem = document.createElement('div')
+    elem.innerHTML = html
+    return elem.innerText.trim() === ''
+  }
+
   $: updateRendered(content)
 
   function finishEditing() {
@@ -39,7 +45,7 @@
     else if (content !== cell.content.content) {
       try {
         rendered = renderMd(content)
-        if (rendered)
+        if (!htmlIsEmpty(rendered))
           dispatch('update', {
             ...cell,
             content: {
@@ -150,7 +156,9 @@
   }
 
   .rendered {
-    :global(iframe), :global(video), :global(img) {
+    :global(iframe),
+    :global(video),
+    :global(img) {
       margin: 0.3em auto;
       display: block;
       max-width: 100%;
