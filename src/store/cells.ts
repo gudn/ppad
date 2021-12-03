@@ -2,7 +2,7 @@ import sort from 'sort-es'
 import { LexoRank } from '@wewatch/lexorank'
 import { attach, clearNode, createDomain, Store } from 'effector'
 
-import type { PCell } from '../models/cells'
+import type { PCell, PContentItem } from '../models/cells'
 import type { PDocument } from '../models/documents'
 import {
   deleteFx,
@@ -28,6 +28,7 @@ export interface Cells {
     deleteByRank: (rank: string) => Promise<number>
     swapCells: (rank1: string, rank2: string) => Promise<void>
     createEmptyAfter: (idx: number) => Promise<void>
+    createAfter: (idx: number, content: PContentItem) => Promise<void>
     toJson: (doc: PDocument) => Promise<string>
   }
   clean: () => void
@@ -204,12 +205,12 @@ export default async function cellsFromDocument(
     },
   )
 
-  const createEmptyAfterFx = attach({
+  const createEmptyFx = attach({
     name: 'createEmptyAfter',
     source: all,
-    mapParams: (idx: number, cells: PCell[]) => ({ idx, cells }),
+    mapParams: (params: {idx: number, content: PContentItem}, cells: PCell[]) => ({ ...params, cells }),
     effect: domain.createEffect(
-      async ({ idx, cells }: { idx: number; cells: PCell[] }) => {
+      async ({ idx, content, cells }: { content:PContentItem, idx: number; cells: PCell[] }) => {
         if (idx >= cells.length) throw 'invalid index'
         const rank1 = LexoRank.parse(cells[idx].rank)
         const rank2 =
@@ -218,10 +219,7 @@ export default async function cellsFromDocument(
             : LexoRank.parse(cells[idx + 1].rank)
         const newRank = rank1.between(rank2).toString()
         const cell = {
-          content: {
-            content: '',
-            rendered: '',
-          },
+          content,
           drawing: null,
           rank: newRank,
         }
@@ -272,7 +270,7 @@ export default async function cellsFromDocument(
         }
       })
     })
-    .on(createEmptyAfterFx.doneData, (cells, [idx, cell]: [number, PCell]) => [
+    .on(createEmptyFx.doneData, (cells, [idx, cell]: [number, PCell]) => [
       ...cells.slice(0, idx + 1),
       cell,
       ...cells.slice(idx + 1),
@@ -293,7 +291,10 @@ export default async function cellsFromDocument(
         await swapCellsFx({ irank1: rank1, irank2: rank2 })
       },
       createEmptyAfter: async (idx: number) => {
-        await createEmptyAfterFx(idx)
+        await createEmptyFx({idx, content: {content: '', rendered: ''}})
+      },
+      createAfter: async (idx: number, content: PContentItem) => {
+        await createEmptyFx({idx, content})
       },
       toJson
     },

@@ -2,7 +2,7 @@
   import { navigate } from 'svelte-navigator'
 
   import type { Cells } from '../../store/cells'
-  import type { PCell } from '../../models/cells'
+  import type { PCell, PContentItem } from '../../models/cells'
 
   import CellCreateButton from './CellCreateButton.svelte'
   import Cell from './Cell.svelte'
@@ -65,6 +65,14 @@
   function updateHandler(e: CustomEvent<PCell>) {
     cells.low.update(e.detail)
   }
+
+  async function createNext(e: CustomEvent<[number, PContentItem | null]>) {
+    const [idx, content] = e.detail
+    if (content === null)
+      createCellAtIndex(idx)
+    else
+      cells.high.createAfter(idx - 1, content)
+  }
 </script>
 
 <div on:click={clickHandler}>
@@ -75,6 +83,7 @@
       index={index + 1}
       on:delete={deleteHandler}
       on:update={updateHandler}
+      on:createNext={createNext}
     />
     <CellCreateButton index={index + 1} />
   {/each}

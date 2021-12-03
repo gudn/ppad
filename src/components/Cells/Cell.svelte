@@ -84,6 +84,23 @@
     )
 
     function updateHeight(e: KeyboardEvent | null) {
+      if (e?.code === 'Enter') {
+        const value = node.value
+        const splitIndex = value.indexOf('\n\n\n\n')
+        if (splitIndex !== -1) {
+          content = value.slice(0, splitIndex).trim()
+          node.blur()
+          const after = value.slice(splitIndex + 4).trim()
+          const afterRendered = renderMd(after).trim()
+          if (!content || htmlIsEmpty(afterRendered)) dispatch('createNext', [index, null])
+          else
+            dispatch('createNext', [
+              index,
+              { content: after, rendered: afterRendered },
+            ])
+          return
+        }
+      }
       if (e?.code === 'Escape') node.blur()
       node.style.height = '0'
       const height = node.scrollHeight + 2
