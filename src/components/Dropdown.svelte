@@ -25,7 +25,7 @@
 
         display: none;
 
-        left: 0;
+        right: 0;
         position: absolute;
         top: 100%;
 
@@ -41,7 +41,7 @@
         }
 
         :global(ul) {
-          left: 100%;
+          right: 100%;
           position: absolute;
           top: 0;
 

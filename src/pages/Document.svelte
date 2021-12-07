@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
-  import { useLocation, Link } from 'svelte-navigator'
+  import { useLocation, Link, navigate } from 'svelte-navigator'
 
   import type { PDocument } from '../models/documents'
   import documents from '../store/documents'
@@ -16,26 +16,42 @@
 
   const location = useLocation()
 
-  onMount(async () => {
+  async function init() {
     ;[doc, cells] = await Promise.all([
       documents.getDocument(key),
       getCells(key),
     ])
     document.title = doc.title
+  }
+
+  onMount(async () => {
     if ($location.state.reload === true) {
       window.history.replaceState({}, '')
       window.location.reload()
     }
+    await init()
   })
 
   onDestroy(() => {
     if (cells) cells.clean()
   })
+
+  async function renameHandler(e: CustomEvent<string>) {
+    const newTitle = e.detail
+    if (newTitle === doc.title) return
+    const res = await documents.rename({ key: doc.key, newTitle })
+    if (!res) return
+    navigate(`/doc/${res[1].key}`)
+  }
 </script>
 
 <div class="wrapper">
   {#if doc}
-    <DocumentHeader {doc} toJson={cells.high.toJson} />
+    <DocumentHeader
+      {doc}
+      toJson={cells.high.toJson}
+      on:rename={renameHandler}
+    />
   {/if}
 
   <main>

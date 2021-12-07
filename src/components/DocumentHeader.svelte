@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte'
   import { useNavigate } from 'svelte-navigator'
 
   import type { PDocument } from '../models/documents'
@@ -10,6 +11,10 @@
   export let toJson: (doc: PDocument) => Promise<string>
 
   const navigate = useNavigate()
+  const dispatch = createEventDispatcher()
+
+  let docTitle = doc.title
+  let editTitle = false
 
   function deleteDocument() {
     documents.delete_(doc.key).then(() => navigate('/'))
@@ -39,11 +44,27 @@
     const json = await toJson(doc)
     download(`${doc.key}.json`, json)
   }
+
+  function titleEditor(node: HTMLInputElement) {
+    node.addEventListener('blur', () => (editTitle = false))
+    node.focus()
+
+    return {
+      destroy() {
+        docTitle = docTitle.trim()
+        dispatch('rename', docTitle)
+      },
+    }
+  }
 </script>
 
 <header>
   <div>
-    <h4>{doc.title}</h4>
+    {#if editTitle}
+      <input use:titleEditor type="text" bind:value={docTitle} />
+    {:else}
+      <h4 on:click={() => (editTitle = true)}>{docTitle}</h4>
+    {/if}
     <Dropdown>
       <li>
         <div>File</div>
@@ -70,11 +91,26 @@
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: space-between;
       gap: 1em;
     }
 
     hr {
       margin-block-end: 0;
+    }
+
+    input {
+      font-size: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      background-color: $primary-color;
+      border-radius: 4px;
+      color: $text-color;
+      margin-block-start: 1.33em;
+      margin-block-end: 1.33em;
+
+      &:active {
+        outline-color: $text-color;
+      }
     }
   }
 </style>
