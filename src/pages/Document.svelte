@@ -38,10 +38,11 @@
 
   async function renameHandler(e: CustomEvent<string>) {
     const newTitle = e.detail
-    if (newTitle === doc.title) return
+    if (newTitle === doc?.title) return
     const res = await documents.rename({ key: doc.key, newTitle })
     if (!res) return
     navigate(`/doc/${res[1].key}`)
+    document.title = res[1].title
   }
 </script>
 
